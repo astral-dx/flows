@@ -1,0 +1,44 @@
+{
+  "categories": [{
+    "name": "Drivers",
+    "flows": [{
+      "name": "Driver Application",
+      "steps": [{
+        "name": "Submit Application Data",
+        "content": [{ 
+          "type": "markdown",
+          "value": "# Hello World\nThis is some example markdown."
+        },
+        {
+          "type": "snippet",
+          "value": [{
+            "language": "TypeScript",
+            "code": "const x = 10;"
+          }, {
+            "language": "Java",
+            "code": "int x = 10;"
+          }]
+        },
+        {
+          "type": "markdown",
+          "value": "# Make the request\nSee below."
+        },
+        {
+          "type": "openapi-request",
+          "value": {
+            "id": "post-application-data",
+            "data": [{
+              "type": "generated",
+              "key": "driverLicensePhoto",
+              "value": "random.base64"
+            }, {
+              "type": "static",
+              "key": "vehicleMake",
+              "value": "Toyota"
+            }]
+          }
+        }]
+      }]
+    }]
+  }]
+}
