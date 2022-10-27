@@ -24,10 +24,30 @@
           "value": "# Make the request\nSee below."
         },
         {
-          "type": "openapi-request",
+          "type": "request",
           "value": {
-            "id": "post-application-data",
-            "data": [{
+            "path": "/driver-application",
+            "method": "post",
+            "headers": {},
+            "body": {},
+            "query": {},
+            "response": {},
+            "inputs": [{
+              "type": "generated",
+              "key": "driverLicensePhoto",
+              "value": "random.base64"
+            }, {
+              "type": "static",
+              "key": "vehicleMake",
+              "value": "Toyota"
+            }]
+          }
+        },
+        {
+          "type": "request",
+          "value": {
+            "reference": "ridesharecoApiV1.driverApplication.post",
+            "inputs": [{
               "type": "generated",
               "key": "driverLicensePhoto",
               "value": "random.base64"
@@ -40,5 +60,14 @@
         }]
       }]
     }]
+  }],
+  "environments": [{
+    "name": "production",
+    "host": "https://api.rideshareco.com"
+  }],
+  "resources": [{
+    "type": "openapi-spec",
+    "value": "https://api-spec.rideshareco.io/v1.json",
+    "referenceBy": "ridesharecoApiV1"
   }]
 }
