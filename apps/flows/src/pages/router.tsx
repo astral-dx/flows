@@ -1,10 +1,10 @@
 import { createBrowserRouter } from "react-router-dom"
 
-import App from "./App/App"
+import { HelloWorldPage } from "./HelloWorldPage"
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <HelloWorldPage />,
   },
 ])
