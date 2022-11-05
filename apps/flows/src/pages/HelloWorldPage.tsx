@@ -1,7 +1,7 @@
 import { styled, Typography } from '@mui/material'
 import { Suspense, lazy } from 'react';
 
-const CodeSplitTest = lazy(() => import('../components/CodeSplitTest'));
+const Request = lazy(() => import('../components/Request/Request'))
 
 const Text = styled(Typography)`
   color: red;
@@ -9,12 +9,13 @@ const Text = styled(Typography)`
 
 export const HelloWorldPage = () => {
   return (
-    <Text variant="h1">
-      Hello World!
-
+    <>
+      <Text variant="h1">
+        Hello World!
+      </Text>
       <Suspense fallback={<div>Loading...</div>}>
-        <CodeSplitTest />
+        <Request />
       </Suspense>
-    </Text>
+    </>
   )
 }
