@@ -9,6 +9,7 @@ importers:
     specifiers:
       '@emotion/react': ^11.10.5
       '@emotion/styled': ^11.10.5
+      '@faker-js/faker': ^7.6.0
       '@mui/icons-material': ^5.10.9
       '@mui/material': ^5.10.12
       '@types/react': ^18.0.22
@@ -25,6 +26,7 @@ importers:
     dependencies:
       '@emotion/react': 11.10.5_bbvjflvjoibwhtpmedigb26h6y
       '@emotion/styled': 11.10.5_wm6ohc3abj5yburmg6pjdgzp24
+      '@faker-js/faker': 7.6.0
       '@mui/icons-material': 5.10.9_5n7l3nqogz2ltkpvtlyqobxizm
       '@mui/material': 5.10.12_gs4twfomdgooimayvnfrqgiwam
       localforage: 1.10.0
@@ -460,6 +462,11 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@faker-js/faker/7.6.0:
+    resolution: {integrity: sha512-XK6BTq1NDMo9Xqw/YkYyGjSsg44fbNwYRx7QK2CuoQgyy+f1rrTDHoExVM5PsyXCtfl2vs2vVJ0MN0yN6LppRw==}
+    engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    dev: false
 
   /@jridgewell/gen-mapping/0.1.1:
     resolution: {integrity: sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w==}

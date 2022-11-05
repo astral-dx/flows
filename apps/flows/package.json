@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@faker-js/faker": "^7.6.0",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.12",
     "localforage": "^1.10.0",
