@@ -1,23 +1,26 @@
 import { generate, Schema } from './generate'
 
-const firstNameSchema: Schema = {
-  type: 'string',
-  faker: 'name.firstName',
-}
-
-const cashSchema: Schema = {
-  type: 'string',
-  faker: {
-    'finance.amount': [100, 10000, 2, '$']
+const objectSchema: Schema = {
+  type: "object",
+  properties: {
+    driverLicensePhoto: {
+      type: "string",
+      faker: "image.dataUri"
+    },
+    vehicleMake: {
+      type: "string",
+      faker: "vehicle.manufacturer"
+    }
   },
+  required: ['driverLicensePhoto', 'vehicleMake'],
+  additionalProperties: false,
 }
 
 const Request = () => {
-  const firstName = generate(firstNameSchema)
-  const cash = generate(cashSchema);
+  const obj = generate(objectSchema);
 
   return (
-    <pre>{ JSON.stringify({ firstName, cash }, null, 2) }</pre>
+    <pre>{ JSON.stringify(obj, null, 2) }</pre>
   )
 }
 
