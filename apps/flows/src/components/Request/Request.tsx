@@ -1,26 +1,19 @@
-import { generate, Schema } from './generate'
+import { FlowRequest } from '../..'
+import { generate } from './generate'
 
-const objectSchema: Schema = {
-  type: "object",
-  properties: {
-    driverLicensePhoto: {
-      type: "string",
-      faker: "image.dataUri"
-    },
-    vehicleMake: {
-      type: "string",
-      faker: "vehicle.manufacturer"
-    }
-  },
-  required: ['driverLicensePhoto', 'vehicleMake'],
-  additionalProperties: false,
-}
+const Request: React.FC<{ request: FlowRequest }> = ({ request }) => {
+  const { query, body, response } = request
 
-const Request = () => {
-  const obj = generate(objectSchema);
+  const generatedQuery = query && generate(query.schema)
+  const generatedBody = body && generate(body.schema)
+  const generatedResponse = response && generate(response.schema)
 
   return (
-    <pre>{ JSON.stringify(obj, null, 2) }</pre>
+    <>
+      <pre>{ JSON.stringify(generatedQuery, null, 2) }</pre>
+      <pre>{ JSON.stringify(generatedBody, null, 2) }</pre>
+      <pre>{ JSON.stringify(generatedResponse, null, 2) }</pre>
+    </>
   )
 }
 
