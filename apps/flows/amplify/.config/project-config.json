@@ -1,0 +1,17 @@
+{
+  "projectName": "flows",
+  "version": "3.1",
+  "frontend": "javascript",
+  "javascript": {
+    "framework": "react",
+    "config": {
+      "SourceDir": "src",
+      "DistributionDir": "dist",
+      "BuildCommand": "npx pnpm run build",
+      "StartCommand": "npx pnpm run start"
+    }
+  },
+  "providers": [
+    "awscloudformation"
+  ]
+}
