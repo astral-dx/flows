@@ -1,10 +1,17 @@
-import { createBrowserRouter } from "react-router-dom"
+import { createBrowserRouter } from 'react-router-dom'
 
-import { HelloWorldPage } from "./HelloWorldPage"
+import { getConfig, getFlow } from '../configs'
+import { FlowPage } from './FlowPage'
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: <HelloWorldPage />,
+    path: '/f/:configId/:collectionId/:flowId',
+    element: <FlowPage />,
+    loader: ({ params }) => {
+      const config = getConfig(params.configId)
+      const flow = getFlow(config, params.collectionId, params.flowId)
+
+      return { config, flow }
+    }
   },
 ])

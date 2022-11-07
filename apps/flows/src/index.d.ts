@@ -1,5 +1,9 @@
 import { Schema } from "./components/Request/generate";
 
+interface Object {
+  hasOwnProperty<K extends PropertyKey>(key: K): this is Record<K, unknown>;
+}
+
 export type HTTPMethod = 'CONNECT' | 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT' | 'TRACE'
 
 export interface Referenceable {
@@ -57,11 +61,13 @@ export interface FlowStep {
 }
 
 export interface Flow {
+  id: string;
   name: string;
   steps: Array<FlowStep>;
 }
 
 export interface FlowCollection {
+  id: string;
   name: string;
   flows: Array<Flow>;
 }

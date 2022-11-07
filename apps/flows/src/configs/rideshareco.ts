@@ -2,8 +2,10 @@ import { FlowsConfig } from '..';
 
 export const config: FlowsConfig = {
   collections: [{
+    id: 'drivers',
     name: 'Drivers',
     flows: [{
+      id: 'driver-application',
       name: 'Driver Application',
       steps: [{
         name: 'Submit Application Data',
