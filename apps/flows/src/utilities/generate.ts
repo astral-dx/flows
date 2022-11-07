@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { JSONSchemaFaker, Schema as JsonSchema } from 'json-schema-faker'
 
-import { FlowData } from '../useFlowData/useFlowData'
+import { FlowData } from '../components/useFlowData/useFlowData'
 
 JSONSchemaFaker.extend("faker", () => faker)
 

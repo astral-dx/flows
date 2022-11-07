@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
+
 import { FlowRequest } from '../..'
 import { useFlowData } from '../useFlowData/useFlowData'
-import { generate } from './generate'
+import { generate } from '../../utilities/generate'
 
-const Request: React.FC<{ request: FlowRequest }> = ({ request }) => {
+const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
   const { addFlowData, data } = useFlowData()
 
   const { query, body, response } = request
@@ -28,4 +29,4 @@ const Request: React.FC<{ request: FlowRequest }> = ({ request }) => {
   )
 }
 
-export default Request
+export default RequestBlock

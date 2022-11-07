@@ -11,7 +11,7 @@ export const config: FlowsConfig = {
         name: 'Submit Application Data',
         blocks: [{ 
           type: 'markdown',
-          value: '# Hello World\nThis is some example markdown.'
+          value: '# Hello World\nThis is {{ ridesharecoApiV1 }} example markdown.'
         },
         {
           type: 'code',

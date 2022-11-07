@@ -1,14 +1,12 @@
-import { styled, Typography } from '@mui/material'
-import { Suspense, lazy } from 'react';
-import { useLoaderData } from 'react-router-dom';
-import { Flow, FlowsConfig } from '..';
-import { FlowDataProvider } from '../components/useFlowData/useFlowData';
+import { Suspense, lazy } from 'react'
+import { useLoaderData } from 'react-router-dom'
 
-const Request = lazy(() => import('../components/Request/Request'))
+import { Flow, FlowsConfig } from '..'
+import { CodeBlock } from '../components/CodeBlock/CodeBlock'
+import { MarkdownBlock } from '../components/MarkdownBlock/MarkdownBlock'
+import { FlowDataProvider } from '../components/useFlowData/useFlowData'
 
-const Text = styled(Typography)`
-  color: red;
-`
+const RequestBlock = lazy(() => import('../components/RequestBlock/RequestBlock'))
 
 export const FlowPage = () => {
   const { config, flow } = useLoaderData() as { config: FlowsConfig, flow: Flow }
@@ -20,8 +18,14 @@ export const FlowPage = () => {
           <>
             { block.type === 'request' && (
               <Suspense fallback={<div>Loading...</div>}>
-                <Request request={ block.value } />
+                <RequestBlock request={ block.value } />
               </Suspense>
+            ) }
+            { block.type === 'markdown' && (
+              <MarkdownBlock markdown={ block.value } />
+            ) }
+            { block.type === 'code' && (
+              <CodeBlock snippets={ block.value } />
             ) }
           </>
         ))) }
