@@ -1,23 +1,41 @@
 import { Schema } from "./utilities/generate";
 
-interface Object {
-  hasOwnProperty<K extends PropertyKey>(key: K): this is Record<K, unknown>;
-}
-
 export type HTTPMethod = 'CONNECT' | 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT' | 'TRACE'
 
 export interface Referenceable {
   referenceBy: string;
 }
 
-export interface FlowGeneratedData extends Referenceable {
+
+
+/*
+ * Flow Block - Code Snippet
+ */
+
+export interface FlowCodeSnippet {
+  language: string;
+  code: string;
+}
+
+export interface FlowCodeBlock {
+  type: 'code';
+  value: Array<FlowCodeSnippet>;
+}
+
+
+
+/*
+ * Flow Block - Request
+ */
+
+export interface FlowRequestGeneratedData extends Referenceable {
   schema: Schema;
 }
 
 export interface FlowGeneratedRequest {
-  query?: FlowGeneratedData;
-  body?: FlowGeneratedData;
-  response?: FlowGeneratedData;
+  query?: FlowRequestGeneratedData;
+  body?: FlowRequestGeneratedData;
+  response?: FlowRequestGeneratedData;
 }
 
 export interface FlowHTTPRequest extends FlowGeneratedRequest {
@@ -33,29 +51,55 @@ export interface FlowOpenAPIRequest extends FlowGeneratedRequest {
 
 export type FlowRequest = FlowHTTPRequest | FlowOpenAPIRequest;
 
-export interface FlowCodeSnippet {
-  language: string;
-  code: string;
+export interface FlowRequestBlock {
+  type: 'request';
+  value: FlowRequest;
 }
+
+
+
+/*
+ * Flow Block - Markdown
+ */
 
 export interface FlowMarkdownBlock {
   type: 'markdown';
   value: string;
 }
 
-export interface FlowRequestBlock {
-  type: 'request';
-  value: FlowRequest;
+
+
+/*
+ * Flow Block - Connection
+ */
+
+export interface FlowConnectionInternalStep {
+  stepId: string;
+  label?: string;
 }
 
-export interface FlowCodeBlock {
-  type: 'code';
-  value: Array<FlowCodeSnippet>;
+export interface FlowConnectionExternalStep extends FlowConnectionInternalStep {
+  collectionId: string;
+  flowId: string;
 }
 
-export type FlowBlock = FlowMarkdownBlock | FlowRequestBlock | FlowCodeBlock;
+type FlowConnection = FlowConnectionInternalStep | FlowConnectionExternalStep;
+
+export interface FlowConnectionBlock {
+  type: 'connection';
+  value: FlowConnection;
+}
+
+
+
+/*
+ * Flow Components
+ */
+
+export type FlowBlock = FlowMarkdownBlock | FlowRequestBlock | FlowCodeBlock | FlowConnectionBlock;
 
 export interface FlowStep {
+  id: string;
   name: string;
   blocks: Array<FlowBlock>;
 }
@@ -71,6 +115,12 @@ export interface FlowCollection {
   name: string;
   flows: Array<Flow>;
 }
+
+
+
+/*
+ * Flow Schema
+ */
 
 export interface FlowEnvironment {
   name: string;

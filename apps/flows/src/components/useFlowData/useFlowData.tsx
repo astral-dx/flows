@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState } from "react"
-import { FlowConstant } from "../..";
+import flatten from 'flat'
+
+import { FlowConstant } from "../.."
 
 export type FlowData = Record<string, unknown>
 
@@ -21,7 +23,7 @@ export const FlowDataProvider: React.FC<{ children: JSX.Element, constants: Arra
 
   const addFlowData = (record: FlowData) => setData({
     ...data,
-    ...record,
+    ...flatten(record),
   })
 
   return (

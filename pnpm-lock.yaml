@@ -12,11 +12,13 @@ importers:
       '@faker-js/faker': ^7.6.0
       '@mui/icons-material': ^5.10.9
       '@mui/material': ^5.10.12
+      '@types/flat': ^5.0.2
       '@types/json-schema': ^7.0.11
       '@types/lodash': ^4.14.188
       '@types/react': ^18.0.22
       '@types/react-dom': ^18.0.7
       '@vitejs/plugin-react': ^2.2.0
+      flat: ^5.0.2
       json-schema: ^0.4.0
       json-schema-faker: 0.5.0-rcv.46
       localforage: ^1.10.0
@@ -35,6 +37,7 @@ importers:
       '@mui/icons-material': 5.10.9_5n7l3nqogz2ltkpvtlyqobxizm
       '@mui/material': 5.10.12_gs4twfomdgooimayvnfrqgiwam
       '@types/lodash': 4.14.188
+      flat: 5.0.2
       json-schema: 0.4.0
       json-schema-faker: 0.5.0-rcv.46
       localforage: 1.10.0
@@ -45,6 +48,7 @@ importers:
       react-router-dom: 6.4.3_biqbaboplfbrettd7655fr4n2y
       sort-by: 1.2.0
     devDependencies:
+      '@types/flat': 5.0.2
       '@types/json-schema': 7.0.11
       '@types/react': 18.0.24
       '@types/react-dom': 18.0.8
@@ -700,6 +704,10 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
+  /@types/flat/5.0.2:
+    resolution: {integrity: sha512-3zsplnP2djeps5P9OyarTxwRpMLoe5Ash8aL9iprw0JxB+FAHjY+ifn4yZUuW4/9hqtnmor6uvjSRzJhiVbrEQ==}
+    dev: true
+
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
     dev: true
@@ -1105,6 +1113,11 @@ packages:
 
   /find-root/1.1.0:
     resolution: {integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==}
+    dev: false
+
+  /flat/5.0.2:
+    resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
+    hasBin: true
     dev: false
 
   /format-util/1.0.5:

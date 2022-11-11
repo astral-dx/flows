@@ -8,6 +8,7 @@ export const config: FlowsConfig = {
       id: 'driver-application',
       name: 'Driver Application',
       steps: [{
+        id: 'submit-app-data',
         name: 'Submit Application Data',
         blocks: [{ 
           type: 'markdown',
@@ -76,6 +77,11 @@ export const config: FlowsConfig = {
                 additionalProperties: false
               }
             }
+          }
+        }, {
+          type: 'connection',
+          value: {
+            stepId: 'submit-app-data',
           }
         }]
       }]
