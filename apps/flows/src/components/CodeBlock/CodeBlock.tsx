@@ -8,15 +8,10 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
   const { data } = useFlowData()
 
   return (
-    <pre>
-      { snippets.map((snippet) => (
-        <CopyBlock
-          text={ replace(snippet.code, data) }
-          language={ snippet.language }
-          theme={ dracula }
-        />
-      )) }
-      {/* <div /> */}
-    </pre>
+    <CopyBlock
+      text={ replace(snippets[0].code, data) }
+      language={ snippets[0].language }
+      theme={ dracula }
+    />
   )
 }

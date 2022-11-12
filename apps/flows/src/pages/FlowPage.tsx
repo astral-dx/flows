@@ -14,8 +14,8 @@ export const FlowPage = () => {
   return (
     <FlowDataProvider constants={ config.constants }>
       <>
-        { flow.steps.map(step => step.blocks.map(block => (
-          <>
+        { flow.steps.map(step => step.blocks.map((block, i) => (
+          <div key={ step.id + i }>
             { block.type === 'request' && (
               <Suspense fallback={<div>Loading...</div>}>
                 <RequestBlock request={ block.value } />
@@ -27,7 +27,7 @@ export const FlowPage = () => {
             { block.type === 'code' && (
               <CodeBlock snippets={ block.value } />
             ) }
-          </>
+          </div>
         ))) }
       </>
     </FlowDataProvider>
