@@ -1,6 +1,8 @@
-import { FlowCodeSnippet } from "../.."
-import { replace } from "../../utilities/replace"
-import { useFlowData } from "../useFlowData/useFlowData"
+import { CopyBlock, dracula } from 'react-code-blocks'
+
+import { FlowCodeSnippet } from '../..'
+import { replace } from '../../utilities/replace'
+import { useFlowData } from '../useFlowData/useFlowData'
 
 export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snippets }) => {
   const { data } = useFlowData()
@@ -8,8 +10,13 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
   return (
     <pre>
       { snippets.map((snippet) => (
-        <span>{ replace(snippet.code, data) }</span>
+        <CopyBlock
+          text={ replace(snippet.code, data) }
+          language={ snippet.language }
+          theme={ dracula }
+        />
       )) }
+      {/* <div /> */}
     </pre>
   )
 }
