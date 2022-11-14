@@ -1,4 +1,4 @@
-import { Flow, FlowsConfig } from '..'
+import { Flow, FlowsConfig, FlowStep } from '..'
 import { config as rideshareco } from './rideshareco'
 
 const getConfig = (configId: string | undefined): FlowsConfig | undefined => {
@@ -9,23 +9,43 @@ const getConfig = (configId: string | undefined): FlowsConfig | undefined => {
   return undefined
 }
 
-const getFlow = (
+const getFlowStep = (
   config: FlowsConfig | undefined,
   collectionId: string | undefined,
   flowId: string | undefined,
-): Flow | undefined => {
+  stepId: string | undefined,
+): {
+  flow: Flow | undefined,
+  step: FlowStep | undefined,
+} => {
   if (!config || !collectionId || !flowId) {
-    return undefined
+    return {
+      flow: undefined,
+      step: undefined,
+    }
   }
 
   const collection = config.collections.find((collection) => collection.id === collectionId)
 
-  if (collection) {
-    return collection.flows.find((flow) => flow.id == flowId)
+  if (!collection) {
+    return {
+      flow: undefined,
+      step: undefined,
+    }
   }
+
+  const flow = collection.flows.find((flow) => flow.id === flowId)
+  let step = flow ? flow.steps.find((step) => step.id === stepId) : undefined
+
+  if (flow && !step) {
+    step = flow.steps[0]
+  }
+
+  return { flow, step }
+  
 }
 
 export  {
   getConfig,
-  getFlow,
+  getFlowStep,
 }

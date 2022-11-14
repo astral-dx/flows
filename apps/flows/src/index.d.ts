@@ -101,6 +101,7 @@ export type FlowBlock = FlowMarkdownBlock | FlowRequestBlock | FlowCodeBlock | F
 export interface FlowStep {
   id: string;
   name: string;
+  description: string;
   blocks: Array<FlowBlock>;
 }
 

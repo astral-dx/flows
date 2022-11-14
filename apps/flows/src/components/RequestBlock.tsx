@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { FlowRequest } from '../..'
-import { useFlowData } from '../useFlowData/useFlowData'
-import { generate } from '../../utilities/generate'
+import { FlowRequest } from '..'
+import { useFlowData } from './useFlowData'
+import { generate } from '../utilities/generate'
 
 const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
   const { addFlowData, data } = useFlowData()
@@ -21,10 +21,10 @@ const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
 
   return (
     <>
-      <pre>{ JSON.stringify(data, null, 2) }</pre>
-      <pre>{ JSON.stringify(generatedQuery, null, 2) }</pre>
-      <pre>{ JSON.stringify(generatedBody, null, 2) }</pre>
-      <pre>{ JSON.stringify(generatedResponse, null, 2) }</pre>
+      <div>{ JSON.stringify(data, null, 2) }</div>
+      <div>{ JSON.stringify(generatedQuery, null, 2) }</div>
+      <div>{ JSON.stringify(generatedBody, null, 2) }</div>
+      <div>{ JSON.stringify(generatedResponse, null, 2) }</div>
     </>
   )
 }

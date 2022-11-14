@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react"
 import flatten from 'flat'
 
-import { FlowConstant } from "../.."
+import { FlowConstant } from ".."
 
 export type FlowData = Record<string, unknown>
 
