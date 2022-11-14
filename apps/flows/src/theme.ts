@@ -56,7 +56,7 @@ export const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#556cd6',
+      main: '#7D6FDE',
     },
     secondary: {
       main: '#19857b',
@@ -64,5 +64,8 @@ export const theme = createTheme({
     error: {
       main: red.A400,
     },
+    background: {
+      paper: 'rgb(250, 250, 250)',
+    }
   },
 })

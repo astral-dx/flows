@@ -33,18 +33,21 @@ export interface FlowRequestGeneratedData extends Referenceable {
 }
 
 export interface FlowGeneratedRequest {
+  type: string;
   query?: FlowRequestGeneratedData;
   body?: FlowRequestGeneratedData;
-  response?: FlowRequestGeneratedData;
+  response: FlowRequestGeneratedData;
 }
 
 export interface FlowHTTPRequest extends FlowGeneratedRequest {
+  type: 'HTTP';
   path: string;
   method: Method;
-  headers: Record<string, string>;
+  headers?: Record<string, string>;
 }
 
 export interface FlowOpenAPIRequest extends FlowGeneratedRequest {
+  type: 'OpenAPI';
   specUrl: string;
   requestId: string;
 }

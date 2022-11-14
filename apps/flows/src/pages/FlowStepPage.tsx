@@ -29,18 +29,18 @@ export const FlowStepPage = () => {
   const { config, flow, step } = useLoaderData() as { config: FlowsConfig, flow: Flow, step: FlowStep }
 
   return (
-    <FlowDataProvider constants={ config.constants }>
+    <FlowDataProvider constants={ config.constants } environments={ config.environments }>
       <Container maxWidth="md">
         <FlowTitle flow={ flow } />
         <StepTitle step={ step } />
         <BlocksWrapper>
           { step.blocks.map((block, i) => (
             <div key={ step.id + i }>
-              {/* { block.type === 'request' && (
+              { block.type === 'request' && (
                 <Suspense fallback={<div>Loading...</div>}>
                   <RequestBlock request={ block.value } />
                 </Suspense>
-              ) } */}
+              ) }
               { block.type === 'markdown' && (
                 <MarkdownBlock markdown={ block.value } />
               ) }

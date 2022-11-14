@@ -35,9 +35,9 @@ export const config: FlowsConfig = {
         {
           type: 'request',
           value: {
+            type: 'HTTP',
             path: '/driver-application',
             method: 'post',
-            headers: {},
             body: {
               referenceBy: 'requestBody',
               schema: {
@@ -53,36 +53,30 @@ export const config: FlowsConfig = {
                   }
                 },
                 required: ['driverLicensePhoto', 'vehicleMake'],
+                additionalProperties: false
+              }
+            },
+            response: {
+              referenceBy: 'response',
+              schema: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string',
+                    faker: 'datatype.uuid'
+                  },
+                },
+                required: ['id'],
                 additionalProperties: false
               }
             }
           }
         },
         {
-          type: 'request',
-          value: {
-            specUrl: '{{ridesharecoApiV1}}',
-            requestId: '...',
-            body: {
-              referenceBy: 'requestBody',
-              schema: {
-                type: 'object',
-                properties: {
-                  driverLicensePhoto: {
-                    type: 'string',
-                    faker: 'image.dataUri'
-                  },
-                  vehicleMake: {
-                    type: 'string',
-                    faker: 'vehicle.manufacturer'
-                  }
-                },
-                required: ['driverLicensePhoto', 'vehicleMake'],
-                additionalProperties: false
-              }
-            }
-          }
-        }, {
+          type: 'markdown',
+          value: '## Driver Application Submitted 🎉\nOnce you\'ve submitted your API request let the user know it\'ll take a few hours for their application to be processed.'
+        },
+        {
           type: 'connection',
           value: {
             stepId: 'submit-app-data',
@@ -92,8 +86,8 @@ export const config: FlowsConfig = {
     }]
   }],
   environments: [{
-    name: 'production',
-    host: 'https://api.rideshareco.com'
+    name: 'sandbox',
+    host: 'https://sanbox-api.rideshareco.com'
   }],
   constants: [{
     value: 'https://api-spec.rideshareco.io/v1.json',

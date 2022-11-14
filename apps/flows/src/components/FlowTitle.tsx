@@ -9,7 +9,7 @@ const Wrapper = styled('div')(({ theme }) => `
   padding: ${theme.spacing(10)};
   text-align: center;
   gap: ${theme.spacing(3)};
-  background-color: rgba(0, 0, 0, 0.025);
+  background-color: ${theme.palette.background.paper};
   margin: ${theme.spacing(5, 0, 10)};
   border-radius: ${theme.shape.borderRadius};
 `)

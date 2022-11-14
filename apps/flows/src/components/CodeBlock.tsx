@@ -34,6 +34,7 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
         >
           { snippets.map(({ language }) => (
             <Tab
+              key={ language }
               value={ language }
               label={ language }
               sx={{ fontWeight: 700, textTransform: 'capitalize' }}
