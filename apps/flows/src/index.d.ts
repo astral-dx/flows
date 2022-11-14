@@ -136,6 +136,7 @@ export interface FlowConstant extends Referenceable {
 }
 
 export interface FlowsConfig {
+  id: string;
   collections: Array<FlowCollection>;
   environments: Array<FlowEnvironment>;
   constants: Array<FlowConstant>;

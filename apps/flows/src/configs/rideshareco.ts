@@ -1,6 +1,7 @@
 import { FlowsConfig } from '..';
 
 export const config: FlowsConfig = {
+  id: 'rideshareco',
   collections: [{
     id: 'drivers',
     name: 'Drivers',

@@ -56,7 +56,6 @@ const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
   const [ showResponse, setShowResponse ] = useState(false)
   const theme = useTheme()
 
-
   const [generatedQuery, setGeneratedQuery] = useState<Record<string, unknown> | undefined>()
   const [generatedBody, setGeneratedBody] = useState<Record<string, unknown> | undefined>()
   const [generatedResponse, setGeneratedResponse] = useState<Record<string, unknown> | undefined>()

@@ -6,12 +6,13 @@ const Wrapper = styled('div')(({ theme }) => `
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: ${theme.spacing(10)};
+  padding: ${theme.spacing(7, 10, 10)};
   text-align: center;
-  gap: ${theme.spacing(3)};
-  background-color: ${theme.palette.background.paper};
-  margin: ${theme.spacing(5, 0, 10)};
-  border-radius: ${theme.shape.borderRadius};
+  gap: ${theme.spacing(1)};
+  background-image: linear-gradient(to right top, #7d6fde, #7162e0, #6354e1, #5547e2, #4338e2, #412fd4, #3e26c6, #3b1db8, #401b9a, #3f1a7e, #3a1963, #32194a);
+  margin: ${theme.spacing(3, 0, 10)};
+  border-radius: 10px;
+  color: white;
 `)
 
 const Subtitle = styled(Typography)(({ theme }) => `
@@ -20,21 +21,11 @@ const Subtitle = styled(Typography)(({ theme }) => `
   font-weight: 700;
 `)
 
-const Graph = styled('div')(({ theme }) => `
-  height: 20px;
-  width: 500px;
-  border-radius: 10px;
-  background-color: ${theme.palette.grey[300]};
-  margin: ${theme.spacing(5, 3, 3)};
-`)
-
-
 export const FlowTitle: React.FC<{ flow: Flow }> = ({ flow }) => {
   return (
     <Wrapper>
       <Subtitle variant="subtitle1">Developer Flow</Subtitle>
       <Typography variant="h1">{ flow.name }</Typography>
-      <Graph />
     </Wrapper>
   )
 }
