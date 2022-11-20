@@ -39,6 +39,9 @@ export const config: FlowsConfig = {
             type: 'HTTP',
             path: '/driver-application',
             method: 'post',
+            headers: {
+              'Content-Type': 'application/json',
+            },
             body: {
               referenceBy: 'requestBody',
               schema: {

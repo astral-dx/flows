@@ -7,6 +7,7 @@ import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { FlowRequest } from '..'
 import { useFlowData } from './useFlowData'
 import { generate } from '../utilities/generate'
+import { FlowDataInput } from './FlowDataInput'
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -19,14 +20,11 @@ const RequestHeader = styled('div')(({ theme }) => `
   padding: ${theme.spacing(3, 3, 2)};
   display: flex;
   align-items: center;
+  justify-content: space-between;
 `)
 
 const RequestContent = styled('div')(({ theme }) => `
-  border-bottom: 1px solid ${theme.palette.grey[300]};
-`)
 
-const RequestFooter = styled('div')(({ theme }) => `
-  padding: ${theme.spacing(3)};
 `)
 
 const NoContentText = styled(Typography)(({ theme }) => `
@@ -42,7 +40,7 @@ const Method = styled('div')(({ theme }) => `
   border-radius: 8px;
   color: ${theme.palette.background.paper};
   background-color: #7D6FDE;
-  display: inline;
+  display: inline-block;
   margin-right: ${theme.spacing(2)};
   font-size: 0.8rem;
   font-weight: 800;
@@ -78,76 +76,57 @@ const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
     setTimeout(() => {
       setLoading(false)
       setShowResponse(true)
+      setSelectedTab('Response')
     }, Math.random() * (800 - 50) + 50)
   }
 
   return (
     <Wrapper>
       <RequestHeader>
-        <Method>{ request.method }</Method> {environments[0].host}<b>{ request.path }</b>
-      </RequestHeader>
-      <RequestContent>
-        <Tabs value={selectedTab} onChange={(e, tab) => setSelectedTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
-          <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-          <Tab label='Query' value='Query' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-          <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-        </Tabs>
-        { selectedTab === 'Body' && generatedBody && (
-          <SyntaxHighlighter
-            style={ oneLight }
-            customStyle={{ padding: theme.spacing(3) }}
-            language='json'
-          >
-            { JSON.stringify(generatedBody, null, 2) }
-          </SyntaxHighlighter>
-        ) }
-        { selectedTab === 'Body' && !generatedBody && (
-          <NoContentText>No request body</NoContentText>
-        ) }
-        { selectedTab === 'Query' && generatedQuery && (
-          <SyntaxHighlighter
-            style={ oneLight }
-            customStyle={{ padding: theme.spacing(3) }}
-            language='json'
-          >
-            { JSON.stringify(generatedQuery, null, 2) }
-          </SyntaxHighlighter>
-        ) }
-        { selectedTab === 'Query' && !generatedQuery && (
-          <NoContentText>No request query</NoContentText>
-        ) }
-        { selectedTab === 'Headers' && headers && (
-          <SyntaxHighlighter
-            style={ oneLight }
-            customStyle={{ padding: theme.spacing(3) }}
-            language='json'
-          >
-            { JSON.stringify(headers, null, 2) }
-          </SyntaxHighlighter>
-        ) }
-        { selectedTab === 'Headers' && !headers && (
-          <NoContentText>No request headers</NoContentText>
-        ) }
-      </RequestContent>
-      <RequestFooter>
+        <div>
+          <Method>{ request.method }</Method> {environments[0].host}<b>{ request.path }</b>
+        </div>
         <Button
           endIcon={ loading ? <CircularProgress size={20} color='inherit' /> : <PlayCircleFilledWhiteIcon /> }
           variant='contained'
           sx={{ fontWeight: 700, letterSpacing: '0.1rem', borderRadius: '20px', padding: theme.spacing(1, 2.5) }}
           onClick={ onTestRequest }
         >
-          Test Request
+          Send
         </Button>
-      </RequestFooter>
-      { !loading && showResponse && (
-        <SyntaxHighlighter
-          style={ oneLight }
-          customStyle={{ padding: theme.spacing(0, 3, 3) }}
-          language='json'
-        >
-          { JSON.stringify(generatedResponse, null, 2) }
-        </SyntaxHighlighter>
-      ) }
+      </RequestHeader>
+      <RequestContent>
+        <Tabs value={selectedTab} onChange={(e, tab) => setSelectedTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
+          <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+          <Tab label='Query' value='Query' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+          <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+          <Tab disabled={ !showResponse } label='Response' value='Response' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+        </Tabs>
+        { selectedTab === 'Body' && generatedBody && (
+          <FlowDataInput data={ generatedBody } type={ 'generated' } />
+        ) }
+        { selectedTab === 'Body' && !generatedBody && (
+          <NoContentText>No request body</NoContentText>
+        ) }
+        { selectedTab === 'Query' && generatedQuery && (
+          <FlowDataInput data={ generatedQuery } type={ 'generated' } />
+        ) }
+        { selectedTab === 'Query' && !generatedQuery && (
+          <NoContentText>No request query</NoContentText>
+        ) }
+        { selectedTab === 'Headers' && headers && (
+          <FlowDataInput data={ headers } type={ 'static' } />
+        ) }
+        { selectedTab === 'Headers' && !headers && (
+          <NoContentText>No request headers</NoContentText>
+        ) }
+        { selectedTab === 'Response' && generatedResponse && (
+          <FlowDataInput data={ generatedResponse } type={ 'mock-response' } />
+        ) }
+        { selectedTab === 'Response' && !generatedResponse && (
+          <NoContentText>No Response Body</NoContentText>
+        ) }
+      </RequestContent>
     </Wrapper>
   )
 }

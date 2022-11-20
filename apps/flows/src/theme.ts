@@ -4,6 +4,22 @@ import { red } from '@mui/material/colors'
 
 const defaultTheme = createTheme();
 
+export const monospacedFontStack = [
+  'ui-monospace', 
+  '"Menlo"',
+  '"Monaco"', 
+  '"Cascadia Mono"',
+  '"Segoe UI Mono"', 
+  '"Roboto Mono"', 
+  '"Oxygen Mono"', 
+  '"Ubuntu Monospace"', 
+  '"Source Code Pro"',
+  '"Fira Mono"', 
+  '"Droid Sans Mono"', 
+  '"Courier New"',
+  'monospace',
+].join(',')
+
 // Create a theme instance
 export const theme = createTheme({
   typography: {
