@@ -42,7 +42,7 @@ export interface FlowGeneratedRequest {
 export interface FlowHTTPRequest extends FlowGeneratedRequest {
   type: 'HTTP';
   path: string;
-  method: Method;
+  method: HTTPMethod;
   headers?: Record<string, string>;
 }
 

@@ -1,6 +1,17 @@
 
 import { createTheme } from '@mui/material/styles'
 import { red } from '@mui/material/colors'
+import { HTTPMethod } from '.';
+
+declare module '@mui/material' {
+  interface Palette {
+    methods: Record<HTTPMethod, string>
+  }
+
+  interface PaletteOptions {
+    methods?: Record<HTTPMethod, string>
+  }
+}
 
 const defaultTheme = createTheme();
 
@@ -82,6 +93,17 @@ export const theme = createTheme({
     },
     background: {
       paper: 'rgb(250, 250, 250)',
+    },
+    methods: {
+      GET: '#6FDE6F',
+      POST: '#7D6FDE',
+      PUT: '#DA6FDE',
+      PATCH: '#DE986F',
+      DELETE: '#DE6F6F',
+      HEAD: '#6FCCDE',
+      OPTIONS: '#6FDEB7',
+      TRACE: '#DE6F9A',
+      CONNECT: '#DEDC6F'
     }
   },
 })
