@@ -4,7 +4,7 @@ import { Button, CircularProgress, styled, Tab, Tabs, Typography, useTheme } fro
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-import { FlowRequest } from '..'
+import { FlowRequest, HTTPMethod } from '..'
 import { useFlowData } from './useFlowData'
 import { generate } from '../utilities/generate'
 import { FlowDataInput } from './FlowDataInput'
@@ -33,13 +33,13 @@ const NoContentText = styled(Typography)(({ theme }) => `
   font-style: italic;
 `)
 
-const Method = styled('div')(({ theme }) => `
+const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) => `
   padding: ${theme.spacing(0, 1.2)};
   height: 24px;
   line-height: 24px;
   border-radius: 8px;
   color: ${theme.palette.background.paper};
-  background-color: #7D6FDE;
+  background-color: ${theme.palette.methods[method]};
   display: inline-block;
   margin-right: ${theme.spacing(2)};
   font-size: 0.8rem;
@@ -84,7 +84,7 @@ const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
     <Wrapper>
       <RequestHeader>
         <div>
-          <Method>{ request.method }</Method> {environments[0].host}<b>{ request.path }</b>
+          <Method method={request.method}>{ request.method }</Method> {environments[0].host}<b>{ request.path }</b>
         </div>
         <Button
           endIcon={ loading ? <CircularProgress size={20} color='inherit' /> : <PlayCircleFilledWhiteIcon /> }
