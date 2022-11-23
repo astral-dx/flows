@@ -10,8 +10,10 @@ export const generate = (
   referenceBy: string,
   addFlowData: (record: FlowData) => void,
 ): Record<string, unknown> => {
+  console.log(referenceBy)
   const data = JSONSchemaFaker.generate(schema)
   addFlowData({ [referenceBy]: data })
-  return data;
+  console.log(data)
+  return data
 }
 export type Schema = JsonSchema;

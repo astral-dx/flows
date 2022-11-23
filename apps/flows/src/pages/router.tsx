@@ -1,20 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom'
 
-import { getConfig, getFlowStep } from '../configs'
-import { FlowStepPage, flowStepPageLoader } from './FlowStepPage'
+import { FlowPage, flowPageLoader } from './FlowPage'
 import { ErrorBoundary } from '../components/ErrorBoundary'
 
 export const router = createBrowserRouter([
   {
-    path: '/f/:configId/:collectionId/:flowId',
-    element: <FlowStepPage />,
+    path: '/f/:configId/:flowId',
+    element: <FlowPage />,
     errorElement: <ErrorBoundary />,
-    loader: flowStepPageLoader,
+    loader: flowPageLoader,
   },
-  {
-    path: '/f/:configId/:collectionId/:flowId/:stepId',
-    element: <FlowStepPage />,
-    errorElement: <ErrorBoundary />,
-    loader: flowStepPageLoader,
-  }
 ])

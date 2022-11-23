@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react'
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'
 import { Button, CircularProgress, styled, Tab, Tabs, Typography, useTheme } from '@mui/material'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
-
-import { FlowRequest, HTTPMethod } from '..'
+import { FlowsConfig, FlowRequest, FlowRequestReference, HTTPMethod } from '..'
 import { useFlowData } from './useFlowData'
 import { generate } from '../utilities/generate'
 import { FlowDataInput } from './FlowDataInput'
@@ -47,28 +44,62 @@ const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) => `
   text-transform: uppercase;
 `)
 
-const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
+const RequestBlock: React.FC<{
+  config: FlowsConfig,
+  requestRef: FlowRequestReference
+}> = ({ config, requestRef }) => {
   const { addFlowData, data, environments } = useFlowData()
   const [ selectedTab, setSelectedTab ] = useState('Body')
   const [ loading, setLoading ] = useState(false)
   const [ showResponse, setShowResponse ] = useState(false)
   const theme = useTheme()
 
-  const [generatedQuery, setGeneratedQuery] = useState<Record<string, unknown> | undefined>()
-  const [generatedBody, setGeneratedBody] = useState<Record<string, unknown> | undefined>()
-  const [generatedResponse, setGeneratedResponse] = useState<Record<string, unknown> | undefined>()
+  const [ request, setRequest ] = useState<FlowRequest | undefined>(undefined)
 
-  if (request.type === 'OpenAPI') {
-    return null;
-  }
+  const [generatedParamsHeaders, setGeneratedParamsHeaders] = useState<Record<string, unknown> | undefined>()
+  const [generatedParamsQuery, setGeneratedParamsQuery] = useState<Record<string, unknown> | undefined>()
+  const [generatedParamsBody, setGeneratedParamsBody] = useState<Record<string, unknown> | undefined>()
+  const [generatedParamsPath, setGeneratedParamsPath] = useState<Record<string, unknown> | undefined>()
 
-  const { query, body, response, headers } = request
+  const [generatedResponseHeaders, setGeneratedResponseHeaders] = useState<Record<string, unknown> | undefined>()
+  const [generatedResponseBody, setGeneratedResponseBody] = useState<Record<string, unknown> | undefined>()
 
   useEffect(() => {
-    setGeneratedQuery(query && generate(query.schema, query.referenceBy, addFlowData))
-    setGeneratedBody(body && generate(body.schema, body.referenceBy, addFlowData))
-    setGeneratedResponse(response && generate(response.schema, response.referenceBy, addFlowData))
-  }, [query, body, response])
+    setRequest(config.requests.find(req => req.id === requestRef.requestId))
+  }, [config, requestRef])
+
+  useEffect(() => {
+    /*
+     * Feels like we should have a giant function that generates all data and takes into account overrides
+     */
+    if (request && request.params) {
+      const { params } = request
+
+      setGeneratedParamsHeaders(
+        params.headers && generate(params.headers, `${requestRef.referenceBy}.params.headers`, addFlowData)
+      )
+      setGeneratedParamsQuery(
+        params.query && generate(params.query, `${requestRef.referenceBy}.params.query`, addFlowData)
+      )
+      setGeneratedParamsBody(
+        params.body && generate(params.body, `${requestRef.referenceBy}.params.body`, addFlowData)
+      )
+      setGeneratedParamsPath(
+        params.path && generate(params.path, `${requestRef.referenceBy}.params.path`, addFlowData)
+      )
+    }
+
+    if (request && request.response) {
+      const { response } = request
+      
+      setGeneratedResponseHeaders(
+        response.headers && generate(response.headers, `${requestRef.referenceBy}.response.headers`, addFlowData)
+      )
+      setGeneratedResponseBody(
+        response.body && generate(response.body, `${requestRef.referenceBy}.response.body`, addFlowData)
+      )
+    }
+  }, [ request ])
 
   const onTestRequest = () => {
     setLoading(true)
@@ -78,6 +109,10 @@ const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
       setShowResponse(true)
       setSelectedTab('Response')
     }, Math.random() * (800 - 50) + 50)
+  }
+
+  if (!request) {
+    return null
   }
 
   return (
@@ -102,28 +137,28 @@ const RequestBlock: React.FC<{ request: FlowRequest }> = ({ request }) => {
           <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
           <Tab disabled={ !showResponse } label='Response' value='Response' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
         </Tabs>
-        { selectedTab === 'Body' && generatedBody && (
-          <FlowDataInput data={ generatedBody } type={ 'generated' } />
+        { selectedTab === 'Body' && generatedParamsBody && (
+          <FlowDataInput data={ generatedParamsBody } type={ 'generated' } />
         ) }
-        { selectedTab === 'Body' && !generatedBody && (
+        { selectedTab === 'Body' && !generatedParamsBody && (
           <NoContentText>No request body</NoContentText>
         ) }
-        { selectedTab === 'Query' && generatedQuery && (
-          <FlowDataInput data={ generatedQuery } type={ 'generated' } />
+        { selectedTab === 'Query' && generatedParamsQuery && (
+          <FlowDataInput data={ generatedParamsQuery } type={ 'generated' } />
         ) }
-        { selectedTab === 'Query' && !generatedQuery && (
+        { selectedTab === 'Query' && !generatedParamsQuery && (
           <NoContentText>No request query</NoContentText>
         ) }
-        { selectedTab === 'Headers' && headers && (
-          <FlowDataInput data={ headers } type={ 'static' } />
+        { selectedTab === 'Headers' && generatedParamsHeaders && (
+          <FlowDataInput data={ generatedParamsHeaders } type={ 'generated' } />
         ) }
-        { selectedTab === 'Headers' && !headers && (
+        { selectedTab === 'Headers' && !generatedParamsHeaders && (
           <NoContentText>No request headers</NoContentText>
         ) }
-        { selectedTab === 'Response' && generatedResponse && (
-          <FlowDataInput data={ generatedResponse } type={ 'mock-response' } />
+        { selectedTab === 'Response' && generatedResponseBody && (
+          <FlowDataInput data={ generatedResponseBody } type={ 'mock-response' } />
         ) }
-        { selectedTab === 'Response' && !generatedResponse && (
+        { selectedTab === 'Response' && !generatedResponseBody && (
           <NoContentText>No Response Body</NoContentText>
         ) }
       </RequestContent>

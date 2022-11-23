@@ -1,5 +1,5 @@
 import { styled, Tab, Tabs, Typography, useTheme } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
@@ -16,6 +16,11 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
   const { data } = useFlowData()
   const theme = useTheme()
   const [ snippet, setSnippet ] = useState(snippets[0])
+  const [ code, setCode ] = useState(snippets[0].code)
+
+  useEffect(() => {
+    setCode(replace(snippet.code, data))
+  }, [JSON.stringify(data)]);
 
   return (
     <Wrapper>
@@ -48,7 +53,7 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
         showLineNumbers
         language={ snippet.language }
       >
-        { replace(snippet.code, data) }
+        { code }
       </SyntaxHighlighter>
     </Wrapper>
   )
