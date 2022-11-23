@@ -2,22 +2,21 @@ import { Container, styled } from '@mui/material'
 import { Suspense, lazy } from 'react'
 import { LoaderFunction, useLoaderData } from 'react-router-dom'
 
-import { Flow, FlowCollection, FlowsConfig, FlowStep } from '..'
+import { Flow, FlowsConfig } from '..'
 import { CodeBlock } from '../components/CodeBlock'
 import { ConnectionBlock } from '../components/ConnectionBlock'
 import { FlowTitle } from '../components/FlowTitle'
 import { MarkdownBlock } from '../components/MarkdownBlock'
-import { StepTitle } from '../components/StepTitle'
 import { FlowDataProvider } from '../components/useFlowData'
-import { getConfig, getFlowStep } from '../configs'
+import { getConfig, getFlow } from '../configs'
 
 const RequestBlock = lazy(() => import('../components/RequestBlock'))
 
-export const flowStepPageLoader: LoaderFunction = ({ params }) => {
+export const flowPageLoader: LoaderFunction = ({ params }) => {
   const config = getConfig(params.configId)
-  const { collection, flow, step } = getFlowStep(config, params.collectionId, params.flowId, params.stepId)
+  const flow = getFlow(config, params.flowId)
 
-  return { config, collection, flow, step }
+  return { config, flow }
 }
 
 const BlocksWrapper = styled('div')(({ theme }) => `
@@ -36,20 +35,19 @@ const Logo = styled('img')(({ theme }) => `
   height: 30px;
 `)
 
-export const FlowStepPage = () => {
-  const { config, collection, flow, step } = useLoaderData() as { config: FlowsConfig, collection: FlowCollection, flow: Flow, step: FlowStep }
+export const FlowPage = () => {
+  const { config, flow } = useLoaderData() as { config: FlowsConfig, flow: Flow }
 
   return (
     <FlowDataProvider constants={ config.constants } environments={ config.environments }>
       <Container maxWidth="md">
         <FlowTitle flow={ flow } />
-        <StepTitle step={ step } />
         <BlocksWrapper>
-          { step.blocks.map((block, i) => (
-            <div key={ step.id + i }>
+          { flow.blocks.map((block, i) => (
+            <div key={ flow.id + i }>
               { block.type === 'request' && (
                 <Suspense fallback={<div>Loading...</div>}>
-                  <RequestBlock request={ block.value } />
+                  <RequestBlock config={ config } requestRef={ block.value } />
                 </Suspense>
               ) }
               { block.type === 'markdown' && (
@@ -59,13 +57,7 @@ export const FlowStepPage = () => {
                 <CodeBlock snippets={ block.value } />
               ) }
               { block.type === 'connection' && (
-                <ConnectionBlock
-                  config={ config }
-                  collection={ collection }
-                  flow={ flow }
-                  steps={ flow.steps }
-                  connection={ block.value }
-                />
+                <ConnectionBlock config={ config } connection={ block.value } />
               ) }
             </div>
           )) }

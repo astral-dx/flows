@@ -2,7 +2,7 @@ import { Button, styled, useTheme } from '@mui/material'
 import { useEffect, useState } from 'react'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 
-import { Flow, FlowCollection, FlowConnection, FlowsConfig, FlowStep } from '..'
+import { Flow, FlowConnection, FlowsConfig } from '..'
 
 const Wrapper = styled('div')(({ theme }) => `
   margin: ${theme.spacing(5, 0)};
@@ -12,22 +12,23 @@ const Wrapper = styled('div')(({ theme }) => `
 
 export const ConnectionBlock: React.FC<{
   config: FlowsConfig,
-  collection: FlowCollection,
-  flow: Flow,
-  steps: Array<FlowStep>,
   connection: FlowConnection,
-}> = ({ config, collection, flow, steps, connection }) => {
+}> = ({ config, connection }) => {
   const theme = useTheme()
-  const [ step, setStep ] = useState<FlowStep | undefined>()
+  const [ flow, setFlow ] = useState<Flow | undefined>()
 
   useEffect(() => {
-    setStep(steps.find(s => s.id === connection.stepId))
-  }, [ steps, connection ])
+    setFlow(config.flows.find(flow => flow.id === connection.flowId))
+  }, [ connection ])
+
+  if (!flow) {
+    return null
+  }
 
   return (
     <Wrapper>
       <Button
-        href={ `/f/${config.id}/${collection.id}/${flow.id}/${step?.id ?? ''}` }
+        href={ `/f/${config.id}/${flow.id}` }
         size='large'
         variant='contained'
         endIcon={ <ArrowForwardIcon /> }
@@ -38,7 +39,7 @@ export const ConnectionBlock: React.FC<{
           padding: theme.spacing(2, 4),
         }}
       >
-        { connection.label ?? step?.name }
+        { connection.label ?? flow.name }
       </Button>
     </Wrapper>
   )

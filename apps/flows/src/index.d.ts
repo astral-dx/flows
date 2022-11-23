@@ -28,35 +28,35 @@ export interface FlowCodeBlock {
  * Flow Block - Request
  */
 
-export interface FlowRequestGeneratedData extends Referenceable {
-  schema: Schema;
-}
-
-export interface FlowGeneratedRequest {
-  type: string;
-  query?: FlowRequestGeneratedData;
-  body?: FlowRequestGeneratedData;
-  response: FlowRequestGeneratedData;
-}
-
-export interface FlowHTTPRequest extends FlowGeneratedRequest {
-  type: 'HTTP';
+export interface FlowRequest {
+  id: string;
   path: string;
   method: HTTPMethod;
-  headers?: Record<string, string>;
+  params?: {
+    headers?: Schema;
+    query?: Schema;
+    body?: Schema;
+    path?: Schema;
+  };
+  response?: {
+    body?: Schema;
+    headers?: Schema;
+  }
 }
 
-export interface FlowOpenAPIRequest extends FlowGeneratedRequest {
-  type: 'OpenAPI';
-  specUrl: string;
+export interface FlowRequestReference extends Referenceable {
   requestId: string;
+  overrides?: {
+    headers?: Record<string, unknown>;
+    query?: Record<string, unknown>;
+    body?: string | Record<string, unknown>;
+    path?: Record<string, unknown>;
+  }
 }
-
-export type FlowRequest = FlowHTTPRequest | FlowOpenAPIRequest;
 
 export interface FlowRequestBlock {
   type: 'request';
-  value: FlowRequest;
+  value: FlowRequestReference;
 }
 
 
@@ -76,17 +76,10 @@ export interface FlowMarkdownBlock {
  * Flow Block - Connection
  */
 
-export interface FlowConnectionInternalStep {
-  stepId: string;
+export interface FlowConnection {
+  flowId: string;
   label?: string;
 }
-
-export interface FlowConnectionExternalStep extends FlowConnectionInternalStep {
-  collectionId: string;
-  flowId: string;
-}
-
-type FlowConnection = FlowConnectionInternalStep | FlowConnectionExternalStep;
 
 export interface FlowConnectionBlock {
   type: 'connection';
@@ -101,23 +94,18 @@ export interface FlowConnectionBlock {
 
 export type FlowBlock = FlowMarkdownBlock | FlowRequestBlock | FlowCodeBlock | FlowConnectionBlock;
 
-export interface FlowStep {
+export interface Flow {
   id: string;
+  categories?: Array<string>;
   name: string;
   description: string;
   blocks: Array<FlowBlock>;
 }
 
-export interface Flow {
+export interface Category {
   id: string;
   name: string;
-  steps: Array<FlowStep>;
-}
-
-export interface FlowCollection {
-  id: string;
-  name: string;
-  flows: Array<Flow>;
+  description: string;
 }
 
 
@@ -137,7 +125,9 @@ export interface FlowConstant extends Referenceable {
 
 export interface FlowsConfig {
   id: string;
-  collections: Array<FlowCollection>;
+  flows: Array<Flow>;
   environments: Array<FlowEnvironment>;
   constants: Array<FlowConstant>;
+  requests: Array<FlowRequest>;
+  categories?: Array<Category>;
 }

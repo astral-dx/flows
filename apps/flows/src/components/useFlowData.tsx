@@ -27,10 +27,12 @@ export const FlowDataProvider: React.FC<{
     return a
   }, {} as FlowData))
 
-  const addFlowData = (record: FlowData) => setData({
-    ...data,
-    ...flatten(record),
-  })
+  const addFlowData = (record: FlowData) => {
+      setData({
+      ...data,
+      ...flatten(record),
+    })
+  }
 
   return (
     <FlowDataContext.Provider value={{ data, addFlowData, environments }}>
