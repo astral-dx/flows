@@ -71,6 +71,18 @@ export interface FlowMarkdownBlock {
 }
 
 
+/*
+ * Flow Block - Image
+ */
+
+export interface FlowImageBlock {
+  type: 'image';
+  base64: string;
+  alt?: string;
+  blockStyles?: Record<string, string | number>;
+  imageStyles?: Record<string, string | number>;
+}
+
 
 /*
  * Flow Block - Connection
@@ -92,7 +104,7 @@ export interface FlowConnectionBlock {
  * Flow Components
  */
 
-export type FlowBlock = FlowMarkdownBlock | FlowRequestBlock | FlowCodeBlock | FlowConnectionBlock;
+export type FlowBlock = FlowMarkdownBlock | FlowRequestBlock | FlowCodeBlock | FlowConnectionBlock | FlowImageBlock;
 
 export interface Flow {
   id: string;
