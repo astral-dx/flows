@@ -5,7 +5,7 @@ import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 import { FlowCodeSnippet } from '..'
 import { replace } from '../utilities/replace'
-import { useFlowData } from './useFlowData'
+import { useFlowData } from '../hooks/useFlowData'
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -19,7 +19,7 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
   const [ code, setCode ] = useState(snippets[0].code)
 
   useEffect(() => {
-    setCode(replace(snippet.code, data))
+    setCode(replace({ $flowDataType: 'Handlebars', statement: snippet.code }, data) as string)
   }, [JSON.stringify(data)]);
 
   return (

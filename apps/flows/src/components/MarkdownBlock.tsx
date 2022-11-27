@@ -2,7 +2,8 @@ import { List, ListItem, ListItemIcon, styled, Typography } from '@mui/material'
 import Markdown, { Options as MarkdownOptions } from 'react-markdown'
 
 import { replace } from '../utilities/replace'
-import { useFlowData } from './useFlowData'
+import { useFlowData } from '../hooks/useFlowData'
+import { useEffect, useState } from 'react'
 
 const Wrapper = styled('div')(({ theme }) => `
   margin: ${theme.spacing(3, 0)};
@@ -22,8 +23,13 @@ const components: MarkdownOptions['components'] = {
 
 export const MarkdownBlock: React.FC<{ markdown: string }> = ({ markdown }) => {
   const { data } = useFlowData()
+  const [md, setMd] = useState(replace({ $flowDataType: 'Handlebars', statement: markdown}, data) as string)
+
+  useEffect(() => {
+    setMd(replace({ $flowDataType: 'Handlebars', statement: markdown}, data) as string);
+  }, [JSON.stringify(data)]);
 
   return (
-    <Markdown components={ components }>{ replace(markdown, data) }</Markdown>
+    <Markdown components={ components }>{ md }</Markdown>
   )
 }

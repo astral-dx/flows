@@ -5,7 +5,7 @@ import PublicIcon from '@mui/icons-material/Public'
 import PublicOffIcon from '@mui/icons-material/PublicOff'
 
 import { monospacedFontStack } from "../theme"
-import { FlowData } from "./useFlowData"
+import { FlowData } from "../hooks/useFlowData"
 import { Schema } from "../utilities/generate"
 
 const Wrapper = styled('div')(({ theme }) => `
