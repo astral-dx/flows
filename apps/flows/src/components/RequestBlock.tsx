@@ -46,17 +46,30 @@ const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) => `
   text-transform: uppercase;
 `)
 
+const buildUrlPath = (templatePath: string, pathParams: Record<string, Json>, queryParams: Record<string, Json>) => {
+  const path = replacePath(templatePath, pathParams as Record<string, string>)
+  const queryString = Object.keys(queryParams).length > 0 
+    ? `?${Object.entries(queryParams).map((p) => `${p[0]}=${p[1]}`).join('&')}`
+    : '';
+
+  return path + queryString;
+}
+
  /** Request Calculation order:
   *   - Generated data from schema `FlowRequest`.params (not recalculated) (done)
   *   - `FlowRequestReference`.overrides (done)
   *   - User Input
   */
 
+ /** TODO:
+  *   - Inputs for headers/bodys/url params (Track with userInput states)
+  *   - Add body and header elements
+  *   - CURL/Source code for requests (auto generate based on current data)
+  */
 const RequestBlock: React.FC<{
   config: FlowsConfig,
   requestRef: FlowRequestReference
 }> = ({ config, requestRef }) => {
-  console.log('RequestBlock');
   const { activeEnvironment, environments, data, addFlowData } = useFlowData()
   const [ selectedTab, setSelectedTab ] = useState('Body') // TODO: Switching tabs is causing a re-render
   const [ loading, setLoading ] = useState(false)
@@ -74,15 +87,39 @@ const RequestBlock: React.FC<{
   const [requestHeaders, setRequestHeaders] = useState<Record<string, Json>>(generate(request.params?.headers ?? {}))
   const [requestQueryParams, setRequestQueryParams] = useState<Record<string, Json>>(generate(request.params?.query ?? {}))
   const [requestBody, setRequestBody] = useState<Record<string, Json>>(generate(request.params?.body ?? {}))
-  const [requestPath, setRequestPath] = useState<string>(replacePath(request.path, generate(request.params?.path ?? {}) as Record<string, string>))
+  const [requestPathParams, setRequestPathParams] = useState<Record<string, Json>>(generate(request.params?.path ?? {}))
+
+  const [userInputHeaders, setUserInputHeaders] = useState<Record<string, Json>>({})
+  const [userInputQueryParams, setUserQueryParams] = useState<Record<string, Json>>({})
+  const [userInputBody, setUserInputBody] = useState<Record<string, Json>>({})
+  const [userInputPathParams, setUserInputPathParams] = useState<Record<string, Json>>()
 
   const [responseHeaders, setResponseHeaders] = useState<Record<string, Json> | undefined>()
   const [responseBody, setResponseBody] = useState<Record<string, Json> | undefined>()
+  
 
   // Monitor global conext to update requestParams
   useEffect(() => {
-    setRequestPath(replacePath(request.path, replace(requestRef.overrides?.path ?? {}, data) as Record<string, string>))
-  }, [ data ]);
+    setRequestPathParams({
+      ...replace(requestRef.overrides?.path ?? {}, data) as Record<string, Json>,
+      ...userInputPathParams
+    })
+    
+    setRequestBody({
+      ...replace(requestRef.overrides?.body ?? {}, data) as Record<string, Json>,
+      ...userInputBody
+    });
+
+    setRequestHeaders({
+      ...replace(requestRef.overrides?.headers ?? {}, data) as Record<string, Json>,
+      ...userInputHeaders
+    })
+
+    setRequestQueryParams({
+      ...replace(requestRef.overrides?.query ?? {}, data) as Record<string, Json>,
+      ...userInputQueryParams
+    })
+  }, [ data, userInputPathParams, userInputBody, userInputHeaders, userInputQueryParams ]);
 
   const onSendRequest = async () => {
     setLoading(true)
@@ -111,7 +148,7 @@ const RequestBlock: React.FC<{
     <Wrapper>
       <RequestHeader>
         <div>
-          <Method method={request.method}>{ request.method }</Method> {environments[0].host}<b>{ requestPath }</b>
+          <Method method={request.method}>{ request.method }</Method> {environments[0].host}<b>{buildUrlPath(request.path, requestPathParams, requestQueryParams) }</b>
         </div>
         <Button
           endIcon={ loading ? <CircularProgress size={20} color='inherit' /> : <PlayCircleFilledWhiteIcon /> }
@@ -141,10 +178,10 @@ const RequestBlock: React.FC<{
         { selectedTab === 'Query' && (!requestQueryParams || Object.keys(requestQueryParams).length === 0) && (
           <NoContentText>No request query</NoContentText>
         ) }
-        { selectedTab === 'Headers' && requestHeaders && (
+        { selectedTab === 'Headers' && requestHeaders && Object.keys(requestHeaders).length > 0 && (
           <FlowDataInput data={ requestHeaders } type={ 'generated' } />
         ) }
-        { selectedTab === 'Headers' && !requestHeaders && (
+        { selectedTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (
           <NoContentText>No request headers</NoContentText>
         ) }
         { selectedTab === 'Response' && responseBody && (

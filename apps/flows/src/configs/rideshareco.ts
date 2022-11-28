@@ -69,6 +69,16 @@ export const config: FlowsConfig = {
                 $flowDataType: 'JSONata',
                 statement: '$.responses.postDriverApplication.body.id'
               }
+            },
+            query: {
+              id: {
+                $flowDataType: 'Constant',
+                value: 123
+              },
+              name: {
+                $flowDataType: 'Faker',
+                fakerType: 'name.firstName'
+              }
             }
           }
         }
