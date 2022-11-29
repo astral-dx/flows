@@ -100,6 +100,8 @@ const RequestBlock: React.FC<{
 
   // Monitor global conext to update requestParams
   useEffect(() => {
+    // TODO: Should be able to calculate where requestHeaders, requestQueryParams, requestBody, requestPathParams
+    //    Since we keep userInput data, we should be able to record if its generated/grabbed from global data/user input
     setRequestPathParams({
       ...replace(requestRef.overrides?.path ?? {}, data) as Record<string, Json>,
       ...userInputPathParams

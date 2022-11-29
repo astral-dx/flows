@@ -22,6 +22,7 @@ interface FlowDataInputParams {
   disabled?: boolean
 }
 
+// TODO: Add button to clear user input/revert back (will need to remove key from userInput data in RequestBlock)
 export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onChange, disabled = false }) => {
   const theme = useTheme();
 
