@@ -1,6 +1,8 @@
 import { Schema } from "./utilities/generate";
+import { ReplaceData } from "./utilities/replace";
 
 export type HTTPMethod = 'CONNECT' | 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT' | 'TRACE'
+export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
 export interface Referenceable {
   referenceBy: string;
@@ -47,10 +49,10 @@ export interface FlowRequest {
 export interface FlowRequestReference extends Referenceable {
   requestId: string;
   overrides?: {
-    headers?: Record<string, unknown>;
-    query?: Record<string, unknown>;
-    body?: string | Record<string, unknown>;
-    path?: Record<string, unknown>;
+    headers?: ReplaceData;
+    query?: ReplaceData;
+    body?: ReplaceData;
+    path?: ReplaceData;
   }
 }
 
@@ -127,8 +129,10 @@ export interface Category {
  */
 
 export interface FlowEnvironment {
+  id: string;
   name: string;
   host: string;
+  mockEnvironment?: boolean;
 }
 
 export interface FlowConstant extends Referenceable {

@@ -1,19 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { JSONSchemaFaker, Schema as JsonSchema } from 'json-schema-faker'
-
-import { FlowData } from '../components/useFlowData'
+import { Json } from '..';
 
 JSONSchemaFaker.extend("faker", () => faker)
 
 export const generate = (
-  schema: JsonSchema,
-  referenceBy: string,
-  addFlowData: (record: FlowData) => void,
-): Record<string, unknown> => {
-  console.log(referenceBy)
-  const data = JSONSchemaFaker.generate(schema)
-  addFlowData({ [referenceBy]: data })
-  console.log(data)
-  return data
+  schema: JsonSchema
+): Record<string, Json> => {
+  return JSONSchemaFaker.generate(schema)
 }
 export type Schema = JsonSchema;

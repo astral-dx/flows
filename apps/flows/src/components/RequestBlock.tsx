@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'
 import { Button, CircularProgress, styled, Tab, Tabs, Typography, useTheme } from '@mui/material'
-import { FlowsConfig, FlowRequest, FlowRequestReference, HTTPMethod } from '..'
-import { useFlowData } from './useFlowData'
+import { FlowsConfig, FlowRequestReference, HTTPMethod, Json } from '..'
+import { useFlowData } from '../hooks/useFlowData'
 import { generate } from '../utilities/generate'
 import { FlowDataInput } from './FlowDataInput'
+import { mockRequest } from '../utilities/mockRequest'
+import { replacePath, replace } from '../utilities/replace'
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -44,121 +46,166 @@ const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) => `
   text-transform: uppercase;
 `)
 
+const buildUrlPath = (templatePath: string, pathParams: Record<string, Json>, queryParams: Record<string, Json>) => {
+  const path = replacePath(templatePath, pathParams as Record<string, string>)
+  const queryString = Object.keys(queryParams).length > 0 
+    ? `?${Object.entries(queryParams).map((p) => `${p[0]}=${p[1]}`).join('&')}`
+    : '';
+
+  return path + queryString;
+}
+
+ /** Request Calculation order:
+  *   - Generated data from schema `FlowRequest`.params (not recalculated) (done)
+  *   - `FlowRequestReference`.overrides (done)
+  *   - User Input
+  */
+
+ /** TODO:
+  *   - Inputs for headers/bodys/url params (Track with userInput states)
+  *   - Add body and header elements
+  *   - CURL/Source code for requests (auto generate based on current data)
+  */
 const RequestBlock: React.FC<{
   config: FlowsConfig,
   requestRef: FlowRequestReference
 }> = ({ config, requestRef }) => {
-  const { addFlowData, data, environments } = useFlowData()
-  const [ selectedTab, setSelectedTab ] = useState('Body')
+  const { activeEnvironment, environments, data, addFlowData } = useFlowData()
+  const [ selectedTab, setSelectedTab ] = useState('Body') // TODO: Switching tabs is causing a re-render
   const [ loading, setLoading ] = useState(false)
   const [ showResponse, setShowResponse ] = useState(false)
   const theme = useTheme()
+  // Requests in config should never change
+  const request = config.requests.find(req => req.id === requestRef.requestId)
 
-  const [ request, setRequest ] = useState<FlowRequest | undefined>(undefined)
-
-  const [generatedParamsHeaders, setGeneratedParamsHeaders] = useState<Record<string, unknown> | undefined>()
-  const [generatedParamsQuery, setGeneratedParamsQuery] = useState<Record<string, unknown> | undefined>()
-  const [generatedParamsBody, setGeneratedParamsBody] = useState<Record<string, unknown> | undefined>()
-  const [generatedParamsPath, setGeneratedParamsPath] = useState<Record<string, unknown> | undefined>()
-
-  const [generatedResponseHeaders, setGeneratedResponseHeaders] = useState<Record<string, unknown> | undefined>()
-  const [generatedResponseBody, setGeneratedResponseBody] = useState<Record<string, unknown> | undefined>()
-
-  useEffect(() => {
-    setRequest(config.requests.find(req => req.id === requestRef.requestId))
-  }, [config, requestRef])
-
-  useEffect(() => {
-    /*
-     * Feels like we should have a giant function that generates all data and takes into account overrides
-     */
-    if (request && request.params) {
-      const { params } = request
-
-      setGeneratedParamsHeaders(
-        params.headers && generate(params.headers, `${requestRef.referenceBy}.params.headers`, addFlowData)
-      )
-      setGeneratedParamsQuery(
-        params.query && generate(params.query, `${requestRef.referenceBy}.params.query`, addFlowData)
-      )
-      setGeneratedParamsBody(
-        params.body && generate(params.body, `${requestRef.referenceBy}.params.body`, addFlowData)
-      )
-      setGeneratedParamsPath(
-        params.path && generate(params.path, `${requestRef.referenceBy}.params.path`, addFlowData)
-      )
-    }
-
-    if (request && request.response) {
-      const { response } = request
-      
-      setGeneratedResponseHeaders(
-        response.headers && generate(response.headers, `${requestRef.referenceBy}.response.headers`, addFlowData)
-      )
-      setGeneratedResponseBody(
-        response.body && generate(response.body, `${requestRef.referenceBy}.response.body`, addFlowData)
-      )
-    }
-  }, [ request ])
-
-  const onTestRequest = () => {
-    setLoading(true)
-    
-    setTimeout(() => {
-      setLoading(false)
-      setShowResponse(true)
-      setSelectedTab('Response')
-    }, Math.random() * (800 - 50) + 50)
+  // TODO: Style component error.
+  if (!request) {
+    return <div>Invalid Request ID</div>
   }
 
-  if (!request) {
-    return null
+  // Generate starting data from FlowRequest
+  const [requestHeaders, setRequestHeaders] = useState<Record<string, Json>>(generate(request.params?.headers ?? {}))
+  const [requestQueryParams, setRequestQueryParams] = useState<Record<string, Json>>(generate(request.params?.query ?? {}))
+  const [requestBody, setRequestBody] = useState<Record<string, Json>>(generate(request.params?.body ?? {}))
+  const [requestPathParams, setRequestPathParams] = useState<Record<string, Json>>(generate(request.params?.path ?? {}))
+
+  const [userInputHeaders, setUserInputHeaders] = useState<Record<string, Json>>({})
+  const [userInputQueryParams, setUserInputQueryParams] = useState<Record<string, Json>>({})
+  const [userInputBody, setUserInputBody] = useState<Record<string, Json>>({})
+  const [userInputPathParams, setUserInputPathParams] = useState<Record<string, Json>>()
+
+  const [responseHeaders, setResponseHeaders] = useState<Record<string, Json> | undefined>()
+  const [responseBody, setResponseBody] = useState<Record<string, Json> | undefined>()
+  
+
+  // Monitor global conext to update requestParams
+  useEffect(() => {
+    // TODO: Should be able to calculate where requestHeaders, requestQueryParams, requestBody, requestPathParams
+    //    Since we keep userInput data, we should be able to record if its generated/grabbed from global data/user input
+    setRequestPathParams({
+      ...replace(requestRef.overrides?.path ?? {}, data) as Record<string, Json>,
+      ...userInputPathParams
+    })
+    
+    setRequestBody({
+      ...replace(requestRef.overrides?.body ?? {}, data) as Record<string, Json>,
+      ...userInputBody
+    });
+
+    setRequestHeaders({
+      ...replace(requestRef.overrides?.headers ?? {}, data) as Record<string, Json>,
+      ...userInputHeaders
+    })
+
+    setRequestQueryParams({
+      ...replace(requestRef.overrides?.query ?? {}, data) as Record<string, Json>,
+      ...userInputQueryParams
+    })
+  }, [ data, userInputPathParams, userInputBody, userInputHeaders, userInputQueryParams ]);
+
+  const onSendRequest = async () => {
+    setLoading(true)
+    let body: Record<string, Json> = {}
+    let headers: Record<string, Json> = {}
+
+    if (activeEnvironment?.mockEnvironment) {
+      const res = await mockRequest(request.response?.body, request.response?.headers)
+      
+      body = res.body
+      headers = res.headers
+    } else {
+      // Else make request to server
+      
+    }
+    
+    addFlowData(requestRef.referenceBy, { body, headers })
+    setResponseBody(body)
+    setResponseHeaders(headers)
+    setLoading(false)
+    setShowResponse(true)
+    setSelectedTab('Response')
   }
 
   return (
     <Wrapper>
       <RequestHeader>
         <div>
-          <Method method={request.method}>{ request.method }</Method> {environments[0].host}<b>{ request.path }</b>
+          <Method method={request.method}>{ request.method }</Method> {environments[0].host}<b>{buildUrlPath(request.path, requestPathParams, requestQueryParams) }</b>
         </div>
         <Button
           endIcon={ loading ? <CircularProgress size={20} color='inherit' /> : <PlayCircleFilledWhiteIcon /> }
           variant='contained'
           sx={{ fontWeight: 700, letterSpacing: '0.1rem', borderRadius: '20px', padding: theme.spacing(1, 2.5) }}
-          onClick={ onTestRequest }
+          onClick={ onSendRequest }
         >
           Send
         </Button>
       </RequestHeader>
       <RequestContent>
-        <Tabs value={selectedTab} onChange={(e, tab) => setSelectedTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
+        <Tabs value={selectedTab} onChange={(_, tab) => setSelectedTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
           <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
           <Tab label='Query' value='Query' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
           <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
           <Tab disabled={ !showResponse } label='Response' value='Response' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
         </Tabs>
-        { selectedTab === 'Body' && generatedParamsBody && (
-          <FlowDataInput data={ generatedParamsBody } type={ 'generated' } />
+        { selectedTab === 'Body' && requestBody && Object.keys(requestBody).length > 0 && (
+          <FlowDataInput
+            data={ requestBody }
+            type={ 'generated' }
+            onChange={(key, val) => setUserInputBody((d) => ({ ...d, [key]: val }))}
+          />
         ) }
-        { selectedTab === 'Body' && !generatedParamsBody && (
+        { selectedTab === 'Body' && (!requestBody || Object.keys(requestBody).length === 0) && (
           <NoContentText>No request body</NoContentText>
         ) }
-        { selectedTab === 'Query' && generatedParamsQuery && (
-          <FlowDataInput data={ generatedParamsQuery } type={ 'generated' } />
+        { selectedTab === 'Query' && requestQueryParams && Object.keys(requestQueryParams).length > 0 && (
+          <FlowDataInput
+            data={ requestQueryParams }
+            type={ 'generated' }
+            onChange={(key, val) => setUserInputQueryParams((d) => ({ ...d, [key]: val }))}
+          />
         ) }
-        { selectedTab === 'Query' && !generatedParamsQuery && (
+        { selectedTab === 'Query' && (!requestQueryParams || Object.keys(requestQueryParams).length === 0) && (
           <NoContentText>No request query</NoContentText>
         ) }
-        { selectedTab === 'Headers' && generatedParamsHeaders && (
-          <FlowDataInput data={ generatedParamsHeaders } type={ 'generated' } />
+        { selectedTab === 'Headers' && requestHeaders && Object.keys(requestHeaders).length > 0 && (
+          <FlowDataInput
+            data={ requestHeaders }
+            type={ 'generated' }
+            onChange={(key, val) => setUserInputHeaders((d) => ({ ...d, [key]: val }))}
+          />
         ) }
-        { selectedTab === 'Headers' && !generatedParamsHeaders && (
+        { selectedTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (
           <NoContentText>No request headers</NoContentText>
         ) }
-        { selectedTab === 'Response' && generatedResponseBody && (
-          <FlowDataInput data={ generatedResponseBody } type={ 'mock-response' } />
+        { selectedTab === 'Response' && responseBody && (
+          <FlowDataInput
+            data={ responseBody }
+            type={ activeEnvironment?.mockEnvironment ? 'mock-response' : 'api-response' }
+            disabled
+          />
         ) }
-        { selectedTab === 'Response' && !generatedResponseBody && (
+        { selectedTab === 'Response' && !responseBody && (
           <NoContentText>No Response Body</NoContentText>
         ) }
       </RequestContent>

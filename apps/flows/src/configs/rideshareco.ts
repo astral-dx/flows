@@ -50,7 +50,35 @@ export const config: FlowsConfig = {
           referenceBy: 'postDriverApplication',
           overrides: {
             body: {
-              driverLicensePhoto: 'abc',
+              driverLicensePhoto: {
+                $flowDataType: 'Constant',
+                value: 'abc'
+              },
+            }
+          }
+        }
+      },
+      {
+        type: 'request',
+        value: {
+          requestId: 'get-driver-application',
+          referenceBy: 'getDriverApplication',
+          overrides: {
+            path: {
+              id: {
+                $flowDataType: 'JSONata',
+                statement: '$.responses.postDriverApplication.body.id'
+              }
+            },
+            query: {
+              id: {
+                $flowDataType: 'Constant',
+                value: 123
+              },
+              name: {
+                $flowDataType: 'Faker',
+                fakerType: 'name.firstName'
+              }
             }
           }
         }
@@ -60,7 +88,7 @@ export const config: FlowsConfig = {
         value: [
           {
             language: 'typescript',
-            code: `// Example referencing request data!\n\nconst id = '{{response.id}}'`
+            code: `// Example referencing request data!\n\nconst id = '{{responses.postDriverApplication.body.id}}'`
           },
         ]
       },
@@ -77,7 +105,14 @@ export const config: FlowsConfig = {
     ]
   }],
   environments: [{
-    name: 'sandbox',
+    id: 'mock',
+    name: 'Mock',
+    mockEnvironment: true,
+    host: 'https://sanbox-api.rideshareco.com'
+  },
+  {
+    id: 'sandbox',
+    name: 'Sandbox',
     host: 'https://sanbox-api.rideshareco.com'
   }],
   constants: [{
@@ -123,5 +158,23 @@ export const config: FlowsConfig = {
         required: ['id'],
       }
     },
+  },
+  {
+    id: 'get-driver-application',
+    method: 'GET',
+    path: '/driver-application/:id',
+    params: {
+      path: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            faker: 'datatype.uuid'
+          }
+        },
+        required: ['id'],
+        additionalProperties: false
+      }
+    }
   }]
 }

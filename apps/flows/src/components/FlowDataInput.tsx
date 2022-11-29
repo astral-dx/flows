@@ -5,8 +5,7 @@ import PublicIcon from '@mui/icons-material/Public'
 import PublicOffIcon from '@mui/icons-material/PublicOff'
 
 import { monospacedFontStack } from "../theme"
-import { FlowData } from "./useFlowData"
-import { Schema } from "../utilities/generate"
+import { FlowData } from "../hooks/useFlowData"
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -16,8 +15,22 @@ const Wrapper = styled('div')(({ theme }) => `
 
 export type FlowDataInputType = 'static' | 'generated' | 'api-response' | 'mock-response'
 
-export const FlowDataInput: React.FC<{ data: FlowData, type: FlowDataInputType }> = ({ data, type }) => {
+interface FlowDataInputParams {
+  data: FlowData
+  type: FlowDataInputType
+  onChange?: (key: string, val: string) => void 
+  disabled?: boolean
+}
+
+// TODO: Add button to clear user input/revert back (will need to remove key from userInput data in RequestBlock)
+export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onChange, disabled = false }) => {
   const theme = useTheme();
+
+  const handleChange = (key: string, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (onChange) {
+      onChange(key, event.target.value);
+    }
+  };
 
   return (
     <Wrapper>
@@ -69,7 +82,8 @@ export const FlowDataInput: React.FC<{ data: FlowData, type: FlowDataInputType }
             margin={ 'none' }
             key={ i }
             value={ value }
-            disabled
+            onChange={ (e) => handleChange(key, e) }
+            disabled={ disabled }
           />
         )
       }) }

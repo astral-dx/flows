@@ -7,7 +7,7 @@ import {CodeBlock} from '../components/CodeBlock'
 import {ConnectionBlock} from '../components/ConnectionBlock'
 import {FlowTitle} from '../components/FlowTitle'
 import {MarkdownBlock} from '../components/MarkdownBlock'
-import {FlowDataProvider} from '../components/useFlowData'
+import {FlowDataProvider} from '../hooks/useFlowData'
 import {getConfig, getFlow} from '../configs'
 import {ImageBlock} from "../components/ImageBlock";
 
