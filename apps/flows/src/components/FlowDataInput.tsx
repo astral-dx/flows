@@ -6,7 +6,6 @@ import PublicOffIcon from '@mui/icons-material/PublicOff'
 
 import { monospacedFontStack } from "../theme"
 import { FlowData } from "../hooks/useFlowData"
-import { Schema } from "../utilities/generate"
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -16,8 +15,21 @@ const Wrapper = styled('div')(({ theme }) => `
 
 export type FlowDataInputType = 'static' | 'generated' | 'api-response' | 'mock-response'
 
-export const FlowDataInput: React.FC<{ data: FlowData, type: FlowDataInputType }> = ({ data, type }) => {
+interface FlowDataInputParams {
+  data: FlowData
+  type: FlowDataInputType
+  onChange?: (key: string, val: string) => void 
+  disabled?: boolean
+}
+
+export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onChange, disabled = false }) => {
   const theme = useTheme();
+
+  const handleChange = (key: string, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (onChange) {
+      onChange(key, event.target.value);
+    }
+  };
 
   return (
     <Wrapper>
@@ -69,7 +81,8 @@ export const FlowDataInput: React.FC<{ data: FlowData, type: FlowDataInputType }
             margin={ 'none' }
             key={ i }
             value={ value }
-            disabled
+            onChange={ (e) => handleChange(key, e) }
+            disabled={ disabled }
           />
         )
       }) }

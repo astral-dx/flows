@@ -90,7 +90,7 @@ const RequestBlock: React.FC<{
   const [requestPathParams, setRequestPathParams] = useState<Record<string, Json>>(generate(request.params?.path ?? {}))
 
   const [userInputHeaders, setUserInputHeaders] = useState<Record<string, Json>>({})
-  const [userInputQueryParams, setUserQueryParams] = useState<Record<string, Json>>({})
+  const [userInputQueryParams, setUserInputQueryParams] = useState<Record<string, Json>>({})
   const [userInputBody, setUserInputBody] = useState<Record<string, Json>>({})
   const [userInputPathParams, setUserInputPathParams] = useState<Record<string, Json>>()
 
@@ -167,25 +167,41 @@ const RequestBlock: React.FC<{
           <Tab disabled={ !showResponse } label='Response' value='Response' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
         </Tabs>
         { selectedTab === 'Body' && requestBody && Object.keys(requestBody).length > 0 && (
-          <FlowDataInput data={ requestBody } type={ 'generated' } />
+          <FlowDataInput
+            data={ requestBody }
+            type={ 'generated' }
+            onChange={(key, val) => setUserInputBody((d) => ({ ...d, [key]: val }))}
+          />
         ) }
         { selectedTab === 'Body' && (!requestBody || Object.keys(requestBody).length === 0) && (
           <NoContentText>No request body</NoContentText>
         ) }
         { selectedTab === 'Query' && requestQueryParams && Object.keys(requestQueryParams).length > 0 && (
-          <FlowDataInput data={ requestQueryParams } type={ 'generated' } />
+          <FlowDataInput
+            data={ requestQueryParams }
+            type={ 'generated' }
+            onChange={(key, val) => setUserInputQueryParams((d) => ({ ...d, [key]: val }))}
+          />
         ) }
         { selectedTab === 'Query' && (!requestQueryParams || Object.keys(requestQueryParams).length === 0) && (
           <NoContentText>No request query</NoContentText>
         ) }
         { selectedTab === 'Headers' && requestHeaders && Object.keys(requestHeaders).length > 0 && (
-          <FlowDataInput data={ requestHeaders } type={ 'generated' } />
+          <FlowDataInput
+            data={ requestHeaders }
+            type={ 'generated' }
+            onChange={(key, val) => setUserInputHeaders((d) => ({ ...d, [key]: val }))}
+          />
         ) }
         { selectedTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (
           <NoContentText>No request headers</NoContentText>
         ) }
         { selectedTab === 'Response' && responseBody && (
-          <FlowDataInput data={ responseBody } type={ activeEnvironment?.mockEnvironment ? 'mock-response' : 'api-response' } />
+          <FlowDataInput
+            data={ responseBody }
+            type={ activeEnvironment?.mockEnvironment ? 'mock-response' : 'api-response' }
+            disabled
+          />
         ) }
         { selectedTab === 'Response' && !responseBody && (
           <NoContentText>No Response Body</NoContentText>
