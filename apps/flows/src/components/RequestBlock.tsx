@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'
-import SendIcon from '@mui/icons-material/Send'
-import { Button, CircularProgress, IconButton, InputAdornment, styled, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
+import { Button, CircularProgress, styled, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
+import flatten, { unflatten } from 'flat'
 
 import { FlowsConfig, FlowRequestReference, HTTPMethod, Json } from '..'
 import { useFlowData } from '../hooks/useFlowData'
@@ -10,6 +10,7 @@ import { FlowDataInput } from './FlowDataInput'
 import { mockRequest } from '../utilities/mockRequest'
 import { replacePath, replace } from '../utilities/replace'
 import { monospacedFontStack } from '../theme'
+import { merge } from '../utilities/merge'
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -68,7 +69,6 @@ const buildUrlPath = (templatePath: string, pathParams: Record<string, Json>, qu
   */
 
  /** TODO:
-  *   - Inputs for headers/bodys/url params (Track with userInput states)
   *   - Add body and header elements
   *   - CURL/Source code for requests (auto generate based on current data)
   */
@@ -99,35 +99,38 @@ const RequestBlock: React.FC<{
   const [userInputHeaders, setUserInputHeaders] = useState<Record<string, Json>>({})
   const [userInputQueryParams, setUserInputQueryParams] = useState<Record<string, Json>>({})
   const [userInputBody, setUserInputBody] = useState<Record<string, Json>>({})
-  const [userInputPathParams, setUserInputPathParams] = useState<Record<string, Json>>()
+  const [userInputPathParams, setUserInputPathParams] = useState<Record<string, Json>>({})
 
   const [responseHeaders, setResponseHeaders] = useState<Record<string, Json> | undefined>()
   const [responseBody, setResponseBody] = useState<Record<string, Json> | undefined>()
-  
 
   // Monitor global context to update requestParams
   useEffect(() => {
     // TODO: Should be able to calculate where requestHeaders, requestQueryParams, requestBody, requestPathParams
     //    Since we keep userInput data, we should be able to record if its generated/grabbed from global data/user input
-    setRequestPathParams({
-      ...replace(requestRef.overrides?.path ?? {}, data, seed) as Record<string, Json>,
-      ...userInputPathParams
-    })
+    setRequestPathParams((pathParams) => (merge(
+      pathParams,
+      replace(requestRef.overrides?.path ?? {}, data, seed) as Record<string, Json>,
+      userInputPathParams
+    )))
     
-    setRequestBody({
-      ...replace(requestRef.overrides?.body ?? {}, data, seed) as Record<string, Json>,
-      ...userInputBody
-    });
+    setRequestBody((body) => merge(
+      body,
+      replace(requestRef.overrides?.body ?? {}, data, seed) as Record<string, Json>,
+      userInputBody
+    ));
 
-    setRequestHeaders({
-      ...replace(requestRef.overrides?.headers ?? {}, data, seed) as Record<string, Json>,
-      ...userInputHeaders
-    })
+    setRequestHeaders((headers) => (merge(
+      headers,
+      replace(requestRef.overrides?.headers ?? {}, data, seed) as Record<string, Json>,
+      userInputHeaders
+    )))
 
-    setRequestQueryParams({
-      ...replace(requestRef.overrides?.query ?? {}, data, seed) as Record<string, Json>,
-      ...userInputQueryParams
-    })
+    setRequestQueryParams((queryParams) => (merge(
+      queryParams,
+      replace(requestRef.overrides?.query ?? {}, data, seed) as Record<string, Json>,
+      userInputQueryParams
+    )))
   }, [ data, userInputPathParams, userInputBody, userInputHeaders, userInputQueryParams ]);
 
   const onSendRequest = async () => {
@@ -205,7 +208,7 @@ const RequestBlock: React.FC<{
           <FlowDataInput
             data={ requestBody }
             type={ 'generated' }
-            onChange={(key, val) => setUserInputBody((d) => ({ ...d, [key]: val }))}
+            onChange={(key, val) => setUserInputBody((d) => merge(d, { [key]: val }))}
           />
         ) }
         { selectedTab === 'Body' && (!requestBody || Object.keys(requestBody).length === 0) && (
@@ -215,7 +218,7 @@ const RequestBlock: React.FC<{
           <FlowDataInput
             data={ requestQueryParams }
             type={ 'generated' }
-            onChange={(key, val) => setUserInputQueryParams((d) => ({ ...d, [key]: val }))}
+            onChange={(key, val) => setUserInputQueryParams((d) => merge(d, { [key]: val }))}
           />
         ) }
         { selectedTab === 'Query' && (!requestQueryParams || Object.keys(requestQueryParams).length === 0) && (
@@ -225,7 +228,7 @@ const RequestBlock: React.FC<{
           <FlowDataInput
             data={ requestHeaders }
             type={ 'generated' }
-            onChange={(key, val) => setUserInputHeaders((d) => ({ ...d, [key]: val }))}
+            onChange={(key, val) => setUserInputHeaders((d) => merge(d, { [key]: val }))}
           />
         ) }
         { selectedTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (

@@ -20,6 +20,7 @@ importers:
       '@types/react-syntax-highlighter': ^15.5.5
       '@vitejs/plugin-react': ^2.2.0
       '@vitest/coverage-istanbul': ^0.25.3
+      flat: ^5.0.2
       json-schema: ^0.4.0
       json-schema-faker: 0.5.0-rcv.46
       jsonata: ^1.8.6
@@ -42,6 +43,7 @@ importers:
       '@mui/icons-material': 5.10.9_5n7l3nqogz2ltkpvtlyqobxizm
       '@mui/material': 5.10.12_gs4twfomdgooimayvnfrqgiwam
       '@types/lodash': 4.14.188
+      flat: 5.0.2
       json-schema: 0.4.0
       json-schema-faker: 0.5.0-rcv.46
       jsonata: 1.8.6
@@ -1305,6 +1307,11 @@ packages:
 
   /find-root/1.1.0:
     resolution: {integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==}
+    dev: false
+
+  /flat/5.0.2:
+    resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
+    hasBin: true
     dev: false
 
   /format-util/1.0.5:
