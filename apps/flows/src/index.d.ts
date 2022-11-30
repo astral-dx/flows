@@ -77,12 +77,16 @@ export interface FlowMarkdownBlock {
  * Flow Block - Image
  */
 
-export interface FlowImageBlock {
-  type: 'image';
+export interface FlowImage {
   base64: string;
   alt?: string;
   blockStyles?: Record<string, string | number>;
   imageStyles?: Record<string, string | number>;
+}
+
+export interface FlowImageBlock {
+  type: 'image';
+  value: FlowImage;
 }
 
 
@@ -132,7 +136,7 @@ export interface FlowEnvironment {
   id: string;
   name: string;
   host: string;
-  mockEnvironment?: boolean;
+  type: 'live' | 'mock';
 }
 
 export interface FlowConstant extends Referenceable {

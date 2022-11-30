@@ -19,7 +19,7 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
   const [ code, setCode ] = useState(snippets[0].code)
 
   useEffect(() => {
-    setCode(replace({ $flowDataType: 'Handlebars', statement: snippet.code }, data) as string)
+    setCode(replace({ type: 'handlebars', statement: snippet.code }, data) as string)
   }, [JSON.stringify(data)]);
 
   return (

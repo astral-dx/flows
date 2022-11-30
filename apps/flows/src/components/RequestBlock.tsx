@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'
-import { Button, CircularProgress, styled, Tab, Tabs, Typography, useTheme } from '@mui/material'
+import SendIcon from '@mui/icons-material/Send'
+import { Button, CircularProgress, IconButton, InputAdornment, styled, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
+
 import { FlowsConfig, FlowRequestReference, HTTPMethod, Json } from '..'
 import { useFlowData } from '../hooks/useFlowData'
 import { generate } from '../utilities/generate'
 import { FlowDataInput } from './FlowDataInput'
 import { mockRequest } from '../utilities/mockRequest'
 import { replacePath, replace } from '../utilities/replace'
+import { monospacedFontStack } from '../theme'
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -19,7 +22,7 @@ const RequestHeader = styled('div')(({ theme }) => `
   padding: ${theme.spacing(3, 3, 2)};
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* gap: ${theme.spacing(2)}; */
 `)
 
 const RequestContent = styled('div')(({ theme }) => `
@@ -33,17 +36,20 @@ const NoContentText = styled(Typography)(({ theme }) => `
 `)
 
 const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) => `
-  padding: ${theme.spacing(0, 1.2)};
-  height: 24px;
-  line-height: 24px;
-  border-radius: 8px;
-  color: ${theme.palette.background.paper};
-  background-color: ${theme.palette.methods[method]};
+  box-sizing: border-box;
+  padding: ${theme.spacing(1.3, 2, 1.3, 2.5)};
+  width: 89px;
+  text-align: center;
+  flex-shrink: 0;
+  border-top-left-radius: 22px;
+  border-bottom-left-radius: 22px;
+  color: ${theme.palette.methods[method]};
+  border: 1px solid ${theme.palette.methods[method]};
   display: inline-block;
-  margin-right: ${theme.spacing(2)};
   font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
+  background-color: white;
 `)
 
 const buildUrlPath = (templatePath: string, pathParams: Record<string, Json>, queryParams: Record<string, Json>) => {
@@ -74,6 +80,7 @@ const RequestBlock: React.FC<{
   const [ selectedTab, setSelectedTab ] = useState('Body') // TODO: Switching tabs is causing a re-render
   const [ loading, setLoading ] = useState(false)
   const [ showResponse, setShowResponse ] = useState(false)
+  const [ seed ] = useState(Date.now())
   const theme = useTheme()
   // Requests in config should never change
   const request = config.requests.find(req => req.id === requestRef.requestId)
@@ -98,27 +105,27 @@ const RequestBlock: React.FC<{
   const [responseBody, setResponseBody] = useState<Record<string, Json> | undefined>()
   
 
-  // Monitor global conext to update requestParams
+  // Monitor global context to update requestParams
   useEffect(() => {
     // TODO: Should be able to calculate where requestHeaders, requestQueryParams, requestBody, requestPathParams
     //    Since we keep userInput data, we should be able to record if its generated/grabbed from global data/user input
     setRequestPathParams({
-      ...replace(requestRef.overrides?.path ?? {}, data) as Record<string, Json>,
+      ...replace(requestRef.overrides?.path ?? {}, data, seed) as Record<string, Json>,
       ...userInputPathParams
     })
     
     setRequestBody({
-      ...replace(requestRef.overrides?.body ?? {}, data) as Record<string, Json>,
+      ...replace(requestRef.overrides?.body ?? {}, data, seed) as Record<string, Json>,
       ...userInputBody
     });
 
     setRequestHeaders({
-      ...replace(requestRef.overrides?.headers ?? {}, data) as Record<string, Json>,
+      ...replace(requestRef.overrides?.headers ?? {}, data, seed) as Record<string, Json>,
       ...userInputHeaders
     })
 
     setRequestQueryParams({
-      ...replace(requestRef.overrides?.query ?? {}, data) as Record<string, Json>,
+      ...replace(requestRef.overrides?.query ?? {}, data, seed) as Record<string, Json>,
       ...userInputQueryParams
     })
   }, [ data, userInputPathParams, userInputBody, userInputHeaders, userInputQueryParams ]);
@@ -128,14 +135,13 @@ const RequestBlock: React.FC<{
     let body: Record<string, Json> = {}
     let headers: Record<string, Json> = {}
 
-    if (activeEnvironment?.mockEnvironment) {
+    if (activeEnvironment?.type === 'mock') {
       const res = await mockRequest(request.response?.body, request.response?.headers)
       
       body = res.body
       headers = res.headers
     } else {
-      // Else make request to server
-      
+      // Make request to server
     }
     
     addFlowData(requestRef.referenceBy, { body, headers })
@@ -149,13 +155,40 @@ const RequestBlock: React.FC<{
   return (
     <Wrapper>
       <RequestHeader>
-        <div>
-          <Method method={request.method}>{ request.method }</Method> {environments[0].host}<b>{buildUrlPath(request.path, requestPathParams, requestQueryParams) }</b>
-        </div>
+        <Method method={request.method}>{ request.method }</Method>
+        <TextField
+          InputProps={{
+            sx: {
+              fontFamily: monospacedFontStack,
+              marginTop: 0,
+              borderRadius: 0,
+              paddingLeft: theme.spacing(1.25),
+              fontSize: '14px',
+              backgroundColor: 'white',
+              '> input': { padding: theme.spacing(1.5, 1.5, 1.5, 0.75), cursor: 'text' },
+              '> fieldset': { borderLeft: 'none', borderRight: 'none' },
+              '> input.Mui-disabled': { color: theme.palette.text.primary, WebkitTextFillColor: theme.palette.text.primary },
+            }
+          }}
+          margin={ 'none' }
+          value={ environments[0].host + buildUrlPath(request.path, requestPathParams, requestQueryParams) }
+          disabled
+          fullWidth
+        />
         <Button
           endIcon={ loading ? <CircularProgress size={20} color='inherit' /> : <PlayCircleFilledWhiteIcon /> }
-          variant='contained'
-          sx={{ fontWeight: 700, letterSpacing: '0.1rem', borderRadius: '20px', padding: theme.spacing(1, 2.5) }}
+          variant={ 'outlined' }
+          sx={{
+            fontWeight: 700,
+            letterSpacing: '0.1rem',
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            borderTopRightRadius: '22px',
+            borderBottomRightRadius: '22px',
+            padding: theme.spacing(1.1, 2.5, 1.1, 2),
+            flexShrink: 0,
+            backgroundColor: 'white',
+          }}
           onClick={ onSendRequest }
         >
           Send
@@ -201,7 +234,7 @@ const RequestBlock: React.FC<{
         { selectedTab === 'Response' && responseBody && (
           <FlowDataInput
             data={ responseBody }
-            type={ activeEnvironment?.mockEnvironment ? 'mock-response' : 'api-response' }
+            type={ activeEnvironment?.type === 'mock' ? 'mock-response' : 'api-response' }
             disabled
           />
         ) }

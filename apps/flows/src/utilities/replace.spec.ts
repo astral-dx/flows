@@ -5,21 +5,23 @@ import { generateJSONataData, replace, ReplaceData } from './replace';
 describe('replace', () => {
   const globalCtx: FlowGlobalContext = {
     constants: {},
-    callOne: {
-      body: { 
-        test: 'testing',
-        bool: false
+    responses: {
+      callOne: {
+        body: { 
+          test: 'testing',
+          bool: false
+        },
+        headers: {}
       },
-      headers: {}
-    },
-    callTwo: {
-      body: {},
-      headers: {
-        hello: 'world',
-        number: 123,
-        obj: {
-          test: 123,
-          hello: 'world'
+      callTwo: {
+        body: {},
+        headers: {
+          hello: 'world',
+          number: 123,
+          obj: {
+            test: 123,
+            hello: 'world'
+          }
         }
       }
     }
@@ -28,8 +30,8 @@ describe('replace', () => {
   describe('JSONata Replacer', () => {
     it('should use jsonata to get string data from global context', () => {
       const result = generateJSONataData({
-        $flowDataType: 'JSONata',
-        statement: '$.callOne.body.test'
+        type: 'jsonata',
+        query: '$.responses.callOne.body.test'
       }, globalCtx);
 
       expect(result).toEqual('testing')
@@ -37,8 +39,8 @@ describe('replace', () => {
 
     it('should use jsonata to get boolean data from global context', () => {
       const result = generateJSONataData({
-        $flowDataType: 'JSONata',
-        statement: '$.callOne.body.bool'
+        type: 'jsonata',
+        query: '$.responses.callOne.body.bool'
       }, globalCtx);
 
       expect(result).toEqual(false)
@@ -46,8 +48,8 @@ describe('replace', () => {
 
     it('should use jsonata to get number data from global context', () => {
       const result = generateJSONataData({
-        $flowDataType: 'JSONata',
-        statement: '$.callTwo.headers.number'
+        type: 'jsonata',
+        query: '$.responses.callTwo.headers.number'
       }, globalCtx);
 
       expect(result).toEqual(123)
@@ -55,8 +57,8 @@ describe('replace', () => {
 
     it('should use jsonata to get object data from global context', () => {
       const result = generateJSONataData({
-        $flowDataType: 'JSONata',
-        statement: '$.callTwo.headers.obj'
+        type: 'jsonata',
+        query: '$.responses.callTwo.headers.obj'
       }, globalCtx);
 
       expect(result).toEqual({
@@ -70,18 +72,18 @@ describe('replace', () => {
     it('should convert a template obj to the correct data', () => {
       const data: ReplaceData = {
         test: {
-          $flowDataType: 'Constant',
+          type: 'constant',
           value: 'hello world'
         },
         foo: {
           bar: {
-            $flowDataType: 'JSONata',
-            statement: '$.callTwo.headers.obj.test'
+            type: 'jsonata',
+            query: '$.responses.callTwo.headers.obj.test'
           }
         },
         handlebars: {
-          $flowDataType: 'Handlebars',
-          statement: 'Hello, {{ callTwo.headers.hello }}'
+          type: 'handlebars',
+          statement: 'Hello, {{ responses.callTwo.headers.hello }}'
         }
       };
 

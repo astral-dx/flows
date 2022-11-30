@@ -61,11 +61,7 @@ export const FlowPage = () => {
                 <ConnectionBlock config={config} connection={block.value}/>
               )}
               {block.type === 'image' && (
-                <ImageBlock base64Image={block.base64}
-                            alt={block.alt}
-                            blockStyles={block.blockStyles}
-                            imageStyles={block.imageStyles}
-                />
+                <ImageBlock image={block.value} />
               )}
             </div>
           ))}

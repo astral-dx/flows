@@ -23,10 +23,10 @@ const components: MarkdownOptions['components'] = {
 
 export const MarkdownBlock: React.FC<{ markdown: string }> = ({ markdown }) => {
   const { data } = useFlowData()
-  const [md, setMd] = useState(replace({ $flowDataType: 'Handlebars', statement: markdown}, data) as string)
+  const [md, setMd] = useState(replace({ type: 'handlebars', statement: markdown}, data) as string)
 
   useEffect(() => {
-    setMd(replace({ $flowDataType: 'Handlebars', statement: markdown}, data) as string);
+    setMd(replace({ type: 'handlebars', statement: markdown}, data) as string);
   }, [JSON.stringify(data)]);
 
   return (

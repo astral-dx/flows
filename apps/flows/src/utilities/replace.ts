@@ -1,48 +1,60 @@
 import _createCompile from 'lodash/template'
 import _get from 'lodash/get'
 import jsonata from 'jsonata'
-import { faker } from '@faker-js/faker';
-import { Json } from '..';
-import { FlowGlobalContext } from '../hooks/useFlowData';
+import { Faker, faker as BaseFaker } from '@faker-js/faker'
+import { Json } from '..'
+import { FlowGlobalContext } from '../hooks/useFlowData'
 
-interface JSONataType {
-  $flowDataType: 'JSONata';
+interface ReplaceableBase {
+  type: 'jsonata' | 'constant' | 'handlebars' | 'faker';
+}
+
+interface JSONataType extends ReplaceableBase {
+  type: 'jsonata';
+  query: string;
+}
+
+interface ConstantType extends ReplaceableBase {
+  type: 'constant';
+  value: Json;
+}
+
+interface HandlebarsType extends ReplaceableBase {
+  type: 'handlebars';
   statement: string;
 }
 
-interface ConstantType {
-  $flowDataType: 'Constant'
-  value: Json
+interface FakerType  extends ReplaceableBase {
+  type: 'faker';
+  faker: string;
 }
 
-interface HandlebarsType {
-  $flowDataType: 'Handlebars'
-  statement: string
-}
+type Replaceable = JSONataType | ConstantType | HandlebarsType | FakerType;
 
-interface FakerType {
-  $flowDataType: 'Faker'
-  fakerType: string
+const isReplaceable = (data: ReplaceData): data is Replaceable  => {
+  return data.type &&
+  typeof data.type === 'string' &&
+  ['jsonata', 'constant', 'handlebars', 'faker'].includes(data.type)
 }
-
-type ReplaceType = JSONataType | ConstantType | HandlebarsType | FakerType;
 
 interface ReplaceTemplate {
-  [x: string]: ReplaceType | ReplaceTemplate
+  [x: string]: Replaceable | ReplaceTemplate
 }
 
-export type ReplaceData = ReplaceTemplate | ReplaceType;
+export type ReplaceData = ReplaceTemplate | Replaceable;
 
 export const generateConstantData = (template: ConstantType) => {
   return template.value;
 };
 
 export const generateJSONataData = (template: JSONataType, ctx: FlowGlobalContext | Record<string, Json>) => {
-  return jsonata(template.statement).evaluate(ctx);
+  return jsonata(template.query).evaluate(ctx);
 }
 
-export const generateFakerData = (template: FakerType) => {
-  return _get(faker, template.fakerType)();
+export const generateFakerData = (template: FakerType, seed: number) => {
+  const faker = new Faker({ locales: BaseFaker.locales })
+  faker.seed(seed)
+  return _get(faker, template.faker)()
 }
 
 export const generateHandlebarsData = (template: HandlebarsType, ctx: FlowGlobalContext | Record<string, Json>) => {
@@ -58,23 +70,23 @@ export const generateHandlebarsData = (template: HandlebarsType, ctx: FlowGlobal
 }
 
 // TODO: Would be cool to better type return value to narrow it down based off of data
-export const replace = (data: ReplaceData, ctx: FlowGlobalContext | Record<string, Json>): Json => {
-  if (data.$flowDataType) {
-    switch (data.$flowDataType) {
-      case 'Constant':
+export const replace = (data: ReplaceData, ctx: FlowGlobalContext | Record<string, Json>, seed: number): Json => {
+  if (isReplaceable(data)) {
+    switch (data.type) {
+      case 'constant':
         return generateConstantData(data)
-      case 'Handlebars':
+      case 'handlebars':
         return generateHandlebarsData(data, ctx)
-      case 'JSONata':
+      case 'jsonata':
         return generateJSONataData(data, ctx)
-      case 'Faker':
-        return generateFakerData(data)
+      case 'faker':
+        return generateFakerData(data, seed)
     }
   }
 
   return Object.keys(data).reduce((acc, cur) => ({
     ...acc,
-    [cur]: replace(data[cur], ctx)
+    [cur]: replace(data[cur], ctx, seed)
   }), {})
 }
 

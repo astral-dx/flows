@@ -1,4 +1,5 @@
 import {styled} from "@mui/material";
+import { FlowImage } from "..";
 
 const Wrapper = styled('div')<{ styles: Record<string, string | number> }>(({ theme, styles }) => ({
   margin: theme.spacing(3, 0),
@@ -10,10 +11,10 @@ const Img = styled('img')<{ styles: Record<string, string | number> }>(({ styles
   ...styles
 }));
 
-export const ImageBlock: React.FC<{ base64Image: string, alt?: string, label?: string, imageStyles?: Record<string, string | number>, blockStyles?: Record<string, string | number> }> = ({ base64Image, alt, label, imageStyles, blockStyles }) => {
+export const ImageBlock: React.FC<{ image: FlowImage }> = ({ image }) => {
   return (
-    <Wrapper styles={ blockStyles ?? {} }>
-      <Img src={ base64Image } alt={ alt ?? '' } styles={ imageStyles ?? {} } />
+    <Wrapper styles={ image.blockStyles ?? {} }>
+      <Img src={ image.base64 } alt={ image.alt ?? '' } styles={ image.imageStyles ?? {} } />
     </Wrapper>
   )
 }

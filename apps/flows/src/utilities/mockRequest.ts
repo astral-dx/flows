@@ -1,13 +1,13 @@
 import { Json } from "..";
 import { generate, Schema } from "./generate";
 
-interface MockResquestResponse {
+interface MockRequestResponse {
   body: Record<string, Json>;
   headers: Record<string, Json>;
 }
 
 export const mockRequest = (bodySchema: Schema | undefined, headerSchema: Schema | undefined) => {
-  return new Promise<MockResquestResponse>((resolve) => {
+  return new Promise<MockRequestResponse>((resolve) => {
     setTimeout(() => {
       resolve({
         body: generate(bodySchema ?? {}),
