@@ -90,15 +90,15 @@ export const config: FlowsConfig = {
     ]
   }],
   environments: [{
-    id: 'demo',
-    name: 'Demo',
+    id: 'generated',
+    name: 'Generated',
     type: 'mock',
     host: 'https://demo-api.rideshareco.com'
   },
   {
     id: 'sandbox',
-    name: 'Sandbox',
-    type: 'mock',
+    name: 'Sandbox API',
+    type: 'live',
     host: 'https://sanbox-api.rideshareco.com'
   }],
   constants: [{

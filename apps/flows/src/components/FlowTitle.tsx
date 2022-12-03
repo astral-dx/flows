@@ -10,7 +10,7 @@ const Wrapper = styled('div')(({ theme }) => `
   text-align: center;
   gap: ${theme.spacing(1)};
   background-image: linear-gradient(to right top, #7d6fde, #7162e0, #6354e1, #5547e2, #4338e2, #412fd4, #3e26c6, #3b1db8, #401b9a, #3f1a7e, #3a1963, #32194a);
-  margin: ${theme.spacing(3, 0, 10)};
+  margin: ${theme.spacing(3, 0, 0)};
   border-radius: 10px;
   color: white;
 `)
