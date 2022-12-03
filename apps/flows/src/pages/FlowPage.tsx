@@ -10,6 +10,7 @@ import {MarkdownBlock} from '../components/MarkdownBlock'
 import {FlowDataProvider} from '../hooks/useFlowData'
 import {getConfig, getFlow} from '../configs'
 import {ImageBlock} from "../components/ImageBlock";
+import { EnvironmentPicker } from '../components/EnvironmentPicker'
 
 const RequestBlock = lazy(() => import('../components/RequestBlock'))
 
@@ -21,6 +22,7 @@ export const flowPageLoader: LoaderFunction = ({params}) => {
 }
 
 const BlocksWrapper = styled('div')(({theme}) => `
+  margin-top: ${theme.spacing(4)};
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing(3)};
@@ -43,6 +45,9 @@ export const FlowPage = () => {
     <FlowDataProvider constants={config.constants} environments={config.environments}>
       <Container maxWidth="md">
         <FlowTitle flow={flow}/>
+        { !!flow.blocks.find(b => b.type === 'request') && (
+          <EnvironmentPicker />
+        ) }
         <BlocksWrapper>
           {flow.blocks.map((block, i) => (
             <div key={flow.id + i}>
