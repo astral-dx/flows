@@ -10,6 +10,16 @@ import { useFlowData } from '../hooks/useFlowData'
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
   flex-direction: column;
+  background-color: ${theme.palette.background.paper};
+  border-radius: ${theme.shape.borderRadius};
+`)
+
+const TabLabel = styled(Typography)(({ theme }) => `
+  padding: ${theme.spacing(2, 4)};
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-weight: 800;
+  color: ${theme.palette.text.secondary};
 `)
 
 export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snippets }) => {
@@ -17,26 +27,29 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
   const theme = useTheme()
   const [ snippet, setSnippet ] = useState(snippets[0])
   const [ code, setCode ] = useState(snippets[0].code)
+  const [ seed ] = useState(Date.now())
 
   useEffect(() => {
-    setCode(replace({ type: 'handlebars', statement: snippet.code }, data) as string)
+    setCode(replace({ type: 'handlebars', statement: snippet.code }, data, seed) as string)
   }, [JSON.stringify(data)]);
 
   return (
     <Wrapper>
       { snippets.length < 2 && (
-        <Typography variant='caption' sx={{ textTransform: 'capitalize', fontWeight: 700, color: theme.palette.text.secondary }}>
+        <TabLabel variant="caption" sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}` }}>
           { snippet.language }
-        </Typography>
+        </TabLabel>
       ) }
       { snippets.length >= 2 && (
         <Tabs
+          sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}` }}
           value={snippet.language}
           onChange={(e, lang) => setSnippet(snippets.find((s) => s.language === lang) || snippet)}
           variant="scrollable"
           scrollButtons="auto"
           aria-label="scrollable auto tabs example"
         >
+          <TabLabel variant="caption">Language</TabLabel>
           { snippets.map(({ language }) => (
             <Tab
               key={ language }

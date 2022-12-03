@@ -57,7 +57,7 @@ export const FlowDataProvider: React.FC<{
     const env = environments.find(x => x.id === envId)
 
     if (!env) {
-      throw new Error('Invalid evironment')
+      throw new Error('Invalid environment')
     }
 
     setActiveEnvironmentData(env)
