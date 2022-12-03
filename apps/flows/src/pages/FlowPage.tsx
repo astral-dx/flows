@@ -11,6 +11,7 @@ import {FlowDataProvider} from '../hooks/useFlowData'
 import {getConfig, getFlow} from '../configs'
 import {ImageBlock} from "../components/ImageBlock";
 import { EnvironmentPicker } from '../components/EnvironmentPicker'
+import { WebhookBlock } from '../components/WebhookBlock'
 
 const RequestBlock = lazy(() => import('../components/RequestBlock'))
 
@@ -67,6 +68,9 @@ export const FlowPage = () => {
               )}
               {block.type === 'image' && (
                 <ImageBlock image={block.value} />
+              )}
+              {block.type === 'webhook' && (
+                <WebhookBlock webhook={block.value} />
               )}
             </div>
           ))}
