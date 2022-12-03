@@ -62,6 +62,22 @@ export interface FlowRequestBlock {
 }
 
 
+export interface FlowWebhook {
+  method: HTTPMethod;
+  params?: {
+    body?: ReplaceData;
+    query?: ReplaceData;
+  }
+}
+
+/**
+ * Flow Block - Webhook
+ */
+export interface FlowWebhookBlock {
+  type: 'webhook';
+  value: FlowWebhook;
+}
+
 
 /*
  * Flow Block - Markdown
@@ -110,7 +126,13 @@ export interface FlowConnectionBlock {
  * Flow Components
  */
 
-export type FlowBlock = FlowMarkdownBlock | FlowRequestBlock | FlowCodeBlock | FlowConnectionBlock | FlowImageBlock;
+export type FlowBlock = 
+  FlowMarkdownBlock 
+  | FlowRequestBlock 
+  | FlowCodeBlock 
+  | FlowConnectionBlock 
+  | FlowImageBlock 
+  | FlowWebhookBlock;
 
 export interface Flow {
   id: string;

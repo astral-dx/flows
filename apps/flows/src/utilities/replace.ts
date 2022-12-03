@@ -51,9 +51,11 @@ export const generateJSONataData = (template: JSONataType, ctx: FlowGlobalContex
   return jsonata(template.query).evaluate(ctx);
 }
 
-export const generateFakerData = (template: FakerType, seed: number) => {
+export const generateFakerData = (template: FakerType, seed?: number) => {
   const faker = new Faker({ locales: BaseFaker.locales })
-  faker.seed(seed)
+  if (seed) {
+    faker.seed(seed)
+  }
   return _get(faker, template.faker)()
 }
 
@@ -70,7 +72,7 @@ export const generateHandlebarsData = (template: HandlebarsType, ctx: FlowGlobal
 }
 
 // TODO: Would be cool to better type return value to narrow it down based off of data
-export const replace = (data: ReplaceData, ctx: FlowGlobalContext | Record<string, Json>, seed: number): Json => {
+export const replace = (data: ReplaceData, ctx: FlowGlobalContext | Record<string, Json>, seed?: number): Json => {
   if (isReplaceable(data)) {
     switch (data.type) {
       case 'constant':

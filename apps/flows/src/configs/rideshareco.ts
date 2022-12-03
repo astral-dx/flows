@@ -78,6 +78,26 @@ export const config: FlowsConfig = {
         ]
       },
       {
+        type: 'webhook',
+        value: {
+          method: 'POST',
+          params: {
+            body: {
+              id: {
+                type: 'faker',
+                faker: 'datatype.uuid'
+              }
+            },
+            query: {
+              test: {
+                type: 'constant',
+                value: '123'
+              }
+            }
+          }
+        }
+      },
+      {
         type: 'markdown',
         value: '## Driver Application Submitted 🎉\nOnce you\'ve submitted your API request let the user know it\'ll take a few hours for their application to be processed.'
       },

@@ -12,31 +12,31 @@ import { replacePath, replace } from '../utilities/replace'
 import { monospacedFontStack } from '../theme'
 import { merge } from '../utilities/merge'
 
-const Wrapper = styled('div')(({ theme }) => `
+export const Wrapper = styled('div')(({ theme }) => `
   display: flex;
   flex-direction: column;
   background-color: ${theme.palette.background.paper};
   border-radius: ${theme.shape.borderRadius};
 `)
 
-const RequestHeader = styled('div')(({ theme }) => `
+export const RequestHeader = styled('div')(({ theme }) => `
   padding: ${theme.spacing(3, 3, 2)};
   display: flex;
   align-items: center;
   /* gap: ${theme.spacing(2)}; */
 `)
 
-const RequestContent = styled('div')(({ theme }) => `
+export const RequestContent = styled('div')(({ theme }) => `
 
 `)
 
-const NoContentText = styled(Typography)(({ theme }) => `
+export const NoContentText = styled(Typography)(({ theme }) => `
   padding: ${theme.spacing(0, 3, 3)};
   color: ${theme.palette.text.secondary};
   font-style: italic;
 `)
 
-const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) => `
+export const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) => `
   box-sizing: border-box;
   padding: ${theme.spacing(1.3, 2, 1.3, 2.5)};
   width: 89px;
@@ -53,7 +53,7 @@ const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) => `
   background-color: white;
 `)
 
-const TabLabel = styled(Typography)(({ theme }) => `
+export const TabLabel = styled(Typography)(({ theme }) => `
   padding: ${theme.spacing(2, 4)};
   text-transform: uppercase;
   letter-spacing: 0.1rem;
@@ -152,7 +152,17 @@ const RequestBlock: React.FC<{
       body = res.body
       headers = res.headers
     } else {
-      // Make request to server
+      try {
+        const url = environments[0].host + buildUrlPath(request.path, requestPathParams, requestQueryParams);
+
+        await fetch(url, {
+          method: request.method,
+          headers: requestHeaders as Record<string, string>,
+          body: JSON.stringify(requestBody)
+        })
+      } catch (error) {
+        console.error(error);
+      }
     }
     
     addFlowData(requestRef.referenceBy, { body, headers })
