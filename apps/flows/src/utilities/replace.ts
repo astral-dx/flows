@@ -27,6 +27,7 @@ interface HandlebarsType extends ReplaceableBase {
 interface FakerType  extends ReplaceableBase {
   type: 'faker';
   faker: string;
+  fakerArgs?: Json[];
 }
 
 type Replaceable = JSONataType | ConstantType | HandlebarsType | FakerType;
@@ -56,7 +57,10 @@ export const generateFakerData = (template: FakerType, seed?: number) => {
   if (seed) {
     faker.seed(seed)
   }
-  return _get(faker, template.faker)()
+
+  const args = template.fakerArgs ?? [];
+  
+  return _get(faker, template.faker)(...args);
 }
 
 export const generateHandlebarsData = (template: HandlebarsType, ctx: FlowGlobalContext | Record<string, Json>) => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FlowGlobalContext } from '../hooks/useFlowData';
-import { generateJSONataData, replace, ReplaceData } from './replace';
+import { generateFakerData, generateJSONataData, replace, ReplaceData } from './replace';
 
 describe('replace', () => {
   const globalCtx: FlowGlobalContext = {
@@ -65,6 +65,24 @@ describe('replace', () => {
         test: 123,
         hello: 'world'
       })
+    })
+  })
+
+  describe('faker data', () => {
+    it('should correctly pass args to faker', () => {
+      const result = generateFakerData({
+        type: 'faker',
+        faker: 'datatype.number',
+        fakerArgs: [
+          {
+            max: 10,
+            min: 8
+          }
+        ]
+      });
+
+      expect(result).toBeLessThanOrEqual(10);
+      expect(result).toBeGreaterThanOrEqual(8);
     })
   })
 
