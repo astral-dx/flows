@@ -111,7 +111,7 @@ export const config: FlowsConfig = {
   }],
   environments: [{
     id: 'generated',
-    name: 'Generated',
+    name: 'Mock API',
     type: 'mock',
     host: 'https://demo-api.rideshareco.com'
   },

@@ -8,11 +8,7 @@ import { useFlowData } from "../hooks/useFlowData"
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
-  justify-content: center;
   margin-top: ${theme.spacing(4)};
-  /* flex-direction: column; */
-  /* background-color: ${theme.palette.background.paper}; */
-  /* border-radius: ${theme.shape.borderRadius}; */
 `)
 
 export const EnvironmentPicker: React.FC = () => {
@@ -28,17 +24,16 @@ export const EnvironmentPicker: React.FC = () => {
 
   return (
     <Wrapper>
-      <Tooltip title="Request Data Mode">
+      <Tooltip title="Environment">
         <Button
-          size="large"
-          variant="outlined"
+          size={ 'small' }
           sx={{
             fontWeight: 700,
             letterSpacing: '0.1rem',
+            color: 'white',
           }}
           onClick={ (e) => setAnchorEl(e.currentTarget) }
-          startIcon={ activeEnvironment.type === 'live' ? <PublicIcon sx={{ marginRight: theme.spacing(1) }} htmlColor="#15DFD3" fontSize="small" /> : <BoltIcon sx={{ marginRight: theme.spacing(1) }} htmlColor="#F5C827" fontSize="small" /> }
-          endIcon={ <ExpandMoreIcon sx={{ marginLeft: theme.spacing(1) }} /> }
+          endIcon={ <ExpandMoreIcon /> }
         >
           { activeEnvironment.name }
         </Button>
@@ -73,7 +68,7 @@ export const EnvironmentPicker: React.FC = () => {
               maxWidth: '320px',
             }}
           >
-            <b>Request Data Mode</b>
+            <b>Environment</b>
             <br />
             Choose if requests in the flow return schema-driven generated responses or live network responses
           </Typography>

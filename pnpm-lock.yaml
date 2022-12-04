@@ -10,6 +10,8 @@ importers:
       '@emotion/react': ^11.10.5
       '@emotion/styled': ^11.10.5
       '@faker-js/faker': ^7.6.0
+      '@mdi/js': ^7.0.96
+      '@mdi/react': ^1.6.1
       '@mui/icons-material': ^5.10.9
       '@mui/material': ^5.10.12
       '@types/flat': ^5.0.2
@@ -40,6 +42,8 @@ importers:
       '@emotion/react': 11.10.5_bbvjflvjoibwhtpmedigb26h6y
       '@emotion/styled': 11.10.5_wm6ohc3abj5yburmg6pjdgzp24
       '@faker-js/faker': 7.6.0
+      '@mdi/js': 7.0.96
+      '@mdi/react': 1.6.1
       '@mui/icons-material': 5.10.9_5n7l3nqogz2ltkpvtlyqobxizm
       '@mui/material': 5.10.12_gs4twfomdgooimayvnfrqgiwam
       '@types/lodash': 4.14.188
@@ -536,6 +540,16 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
+
+  /@mdi/js/7.0.96:
+    resolution: {integrity: sha512-lNqhkV3cpPfYb/Avh+vXLFukUTbHbyHoFo4Jdc7Oc9UvURGVhamFIpgOVvEf2bNA78zvjXTZeVWExUTR+DLBfQ==}
+    dev: false
+
+  /@mdi/react/1.6.1:
+    resolution: {integrity: sha512-4qZeDcluDFGFTWkHs86VOlHkm6gnKaMql13/gpIcUQ8kzxHgpj31NuCkD8abECVfbULJ3shc7Yt4HJ6Wu6SN4w==}
+    dependencies:
+      prop-types: 15.8.1
+    dev: false
 
   /@mui/base/5.0.0-alpha.104_knhnagtyfncgg2hpin7s37uixq:
     resolution: {integrity: sha512-tQPxZTzfYMwxYfKhEwufbTfdLpNjFdW7bXq6dK0j8651AAyZL4M8wynWUQ98hH1362R26mZFhVxHB2UD9t7VuA==}

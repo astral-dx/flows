@@ -44,11 +44,9 @@ export const FlowPage = () => {
 
   return (
     <FlowDataProvider constants={config.constants} environments={config.environments}>
+      <>
+      <FlowTitle flow={flow}/>
       <Container maxWidth="md">
-        <FlowTitle flow={flow}/>
-        { !!flow.blocks.find(b => b.type === 'request') && (
-          <EnvironmentPicker />
-        ) }
         <BlocksWrapper>
           {flow.blocks.map((block, i) => (
             <div key={flow.id + i}>
@@ -81,6 +79,7 @@ export const FlowPage = () => {
           </a>
         </Footer>
       </Container>
+      </>
     </FlowDataProvider>
   )
 }
