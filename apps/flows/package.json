@@ -13,6 +13,8 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@faker-js/faker": "^7.6.0",
+    "@mdi/js": "^7.0.96",
+    "@mdi/react": "^1.6.1",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.12",
     "@types/lodash": "^4.14.188",
