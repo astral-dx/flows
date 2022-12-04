@@ -45,7 +45,7 @@ export const FlowPage = () => {
   return (
     <FlowDataProvider constants={config.constants} environments={config.environments}>
       <>
-      <FlowTitle flow={flow}/>
+      <FlowTitle flow={flow} config={ config } />
       <Container maxWidth="md">
         <BlocksWrapper>
           {flow.blocks.map((block, i) => (

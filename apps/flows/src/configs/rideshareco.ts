@@ -2,6 +2,9 @@ import { FlowsConfig } from '..';
 
 export const config: FlowsConfig = {
   id: 'rideshareco',
+  brand: {
+    name: 'Rideshare Co.',
+  },
   flows: [{
     id: 'driver-application',
     name: 'How to submit a Driver Application',

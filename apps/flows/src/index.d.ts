@@ -154,6 +154,10 @@ export interface Category {
  * Flow Schema
  */
 
+export interface FlowBrand {
+  name: string;
+}
+
 export interface FlowEnvironment {
   id: string;
   name: string;
@@ -167,6 +171,7 @@ export interface FlowConstant extends Referenceable {
 
 export interface FlowsConfig {
   id: string;
+  brand: FlowBrand;
   flows: Array<Flow>;
   environments: Array<FlowEnvironment>;
   constants: Array<FlowConstant>;

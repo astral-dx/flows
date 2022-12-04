@@ -31,6 +31,8 @@ export const EnvironmentPicker: React.FC = () => {
             fontWeight: 700,
             letterSpacing: '0.1rem',
             color: 'white',
+            padding: theme.spacing(0.5, 2),
+            borderRadius: '15px',
           }}
           onClick={ (e) => setAnchorEl(e.currentTarget) }
           endIcon={ <ExpandMoreIcon /> }
