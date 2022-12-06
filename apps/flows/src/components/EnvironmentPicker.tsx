@@ -1,8 +1,6 @@
 import { Box, Button, Menu, MenuItem, styled, Tooltip, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import PublicIcon from '@mui/icons-material/Public'
-import BoltIcon from '@mui/icons-material/Bolt'
 
 import { useFlowData } from "../hooks/useFlowData"
 
@@ -77,6 +75,7 @@ export const EnvironmentPicker: React.FC = () => {
         </Box>
         { environments.map((env) => (
           <MenuItem
+            key={ env.id }
             sx={{ marginTop: 0 }}
             onClick={ () => { setActiveEnvironment(env.id); setAnchorEl(null); } }
           >

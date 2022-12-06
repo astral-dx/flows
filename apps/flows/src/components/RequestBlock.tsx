@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'
 import { Button, CircularProgress, styled, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
-import flatten, { unflatten } from 'flat'
 
 import { FlowsConfig, FlowRequestReference, HTTPMethod, Json } from '..'
 import { useFlowData } from '../hooks/useFlowData'
