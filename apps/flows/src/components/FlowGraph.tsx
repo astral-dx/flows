@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import Icon from '@mdi/react'
+import { Icon } from '@mdi/react'
 import { mdiWebhook } from '@mdi/js'
 import ShortTextIcon from '@mui/icons-material/ShortText'
 import HttpIcon from '@mui/icons-material/Http'
