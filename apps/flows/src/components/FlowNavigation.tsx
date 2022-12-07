@@ -26,7 +26,7 @@ export const FlowNavigation: React.FC<{ config: FlowsConfig }> = ({ config }) =>
       display={ 'flex' }
       gap={ theme.spacing(4) }
       justifyContent={ 'space-between' }
-      padding={ theme.spacing(4, 0, 8) }
+      padding={ theme.spacing(4, 0, 6) }
     >
       <Box
         display={ 'flex' }

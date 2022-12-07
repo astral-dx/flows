@@ -7,7 +7,7 @@ import { FlowNavigation } from "./FlowNavigation"
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
   flex-direction: column;
-  padding: ${theme.spacing(0, 10, 12)};
+  padding: ${theme.spacing(0, 0, 8)};
   gap: ${theme.spacing(1)};
   color: white;
   position: relative;
@@ -51,8 +51,8 @@ export const FlowTitle: React.FC<{ flow: Flow, config: FlowsConfig }> = ({ flow,
       <Container maxWidth="md">
         <FlowNavigation config={ config } />
         <Subtitle variant="subtitle1">{ config.brand.name }</Subtitle>
-        <Typography variant="h1">{ flow.name }</Typography>
-        <Box display={ 'flex' } alignItems={ 'center'} justifyContent={ 'space-between' }>
+        <Typography sx={{ marginTop: theme.spacing(1) }} variant="h1">{ flow.name }</Typography>
+        <Box marginTop={theme.spacing(2)} display={ 'flex' } alignItems={ 'center'} justifyContent={ 'space-between' }>
           <FlowGraph flow={ flow } />
           { !!flow.blocks.find(b => b.type === 'request') && (
             <EnvironmentPicker />
