@@ -1,4 +1,4 @@
-import { Box, Container, styled, Typography } from "@mui/material"
+import { Box, Container, styled, Typography, useTheme } from "@mui/material"
 import { Flow, FlowsConfig } from ".."
 import { EnvironmentPicker } from "./EnvironmentPicker"
 import { FlowGraph } from "./FlowGraph"
@@ -38,18 +38,19 @@ const Wrapper = styled('div')(({ theme }) => `
 `)
 
 const Subtitle = styled(Typography)(({ theme }) => `
-  text-transform: uppercase;
-  letter-spacing: 0.2rem;
-  font-weight: 700;
+  font-weight: 900;
+  font-size: 1.5rem;
 `)
 
 export const FlowTitle: React.FC<{ flow: Flow, config: FlowsConfig }> = ({ flow, config }) => {
+  const theme = useTheme()
+
   return (
     <Wrapper>
       <div className="title-bg" />
       <Container maxWidth="md">
         <FlowNavigation config={ config } />
-        <Subtitle variant="subtitle1">Developer Flow</Subtitle>
+        <Subtitle variant="subtitle1">{ config.brand.name }</Subtitle>
         <Typography variant="h1">{ flow.name }</Typography>
         <Box display={ 'flex' } alignItems={ 'center'} justifyContent={ 'space-between' }>
           <FlowGraph flow={ flow } />
