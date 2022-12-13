@@ -42,11 +42,11 @@ interface ReplaceTemplate {
   [x: string]: Replaceable | ReplaceTemplate
 }
 
-export type ReplaceData = ReplaceTemplate | Replaceable;
+export type ReplaceData = Replaceable | ReplaceTemplate
 
 export const generateConstantData = (template: ConstantType) => {
   return template.value;
-};
+}
 
 export const generateJSONataData = (template: JSONataType, ctx: FlowGlobalContext | Record<string, Json>) => {
   return jsonata(template.query).evaluate(ctx);

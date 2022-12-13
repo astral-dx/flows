@@ -1,4 +1,4 @@
-import { Box, Container, styled, Typography, useTheme } from "@mui/material"
+import { Box, Container, styled, Typography, useTheme, lighten, darken } from "@mui/material"
 import { Flow, FlowsConfig } from ".."
 import { EnvironmentPicker } from "./EnvironmentPicker"
 import { FlowGraph } from "./FlowGraph"
@@ -13,7 +13,7 @@ const Wrapper = styled('div')(({ theme }) => `
   position: relative;
 
   & > .title-bg {
-    background-image: radial-gradient(circle at bottom left, #7D6FDE, #1F22E2);
+    background-image: radial-gradient(circle at bottom left, ${lighten(theme.palette.primary.main, 0.05)}, ${theme.palette.primary.main});
     position: absolute;
     top: 0; right: 0; bottom: 0; left: 0;
     z-index: -1;
@@ -24,7 +24,7 @@ const Wrapper = styled('div')(({ theme }) => `
     position: absolute;
     z-index: 0;
     top: 0; right: 0; bottom: 0; left: 0;
-    background-image: radial-gradient(circle at bottom right, #32194A, transparent);
+    background-image: radial-gradient(circle at bottom right, ${darken(theme.palette.primary.main, 0.8)}, transparent);
   }
 
   & > .title-bg::after {

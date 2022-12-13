@@ -2,7 +2,7 @@ import {styled} from "@mui/material";
 import { FlowImage } from "..";
 
 const Wrapper = styled('div')<{ styles: Record<string, string | number> }>(({ theme, styles }) => ({
-  margin: theme.spacing(3, 0),
+  margin: 0,
   ...styles
 }));
 

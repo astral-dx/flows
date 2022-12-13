@@ -156,6 +156,11 @@ export interface Category {
 
 export interface FlowBrand {
   name: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+  }
 }
 
 export interface FlowEnvironment {

@@ -1,51 +1,23 @@
 import { FlowsConfig } from '..';
+import { businessCreditApplicationIntroFlow } from './lendflow/flows/business-credit-application-intro';
+import { applyForBusinessCreditFlow } from './lendflow/flows/apply-for-business-credit';
+import { enrichBusinessCreditApplicationFlow } from './lendflow/flows/enrich-business-credit-application';
 
 export const config: FlowsConfig = {
   id: 'lendflow',
   brand: {
     name: 'Lendflow',
+    colors: {
+      primary: '#282a40',
+      secondary: '#03ff73',
+      tertiary: '#393a4e',
+    },
   },
-  flows: [{
-    id: 'api-introduction',
-    description: '',
-    name: 'API Introduction',
-    blocks: [{
-      type: 'markdown',
-      value: 'A Business Credit Application can be created via Widget or API call. In order to create a business application via API call, you must use the Apply for Business Credit endpoint. You can find this and all our endpoints on our Postman Collection (Lendflow API docs).\n\nAll of our endpoints use headers which act as a source of extra information for each API call you make. The headers we use are the following\n- Authorization: Carries credentials that authenticate a user-agent with a server\n- Content-Type: Indicates the media type of the resource\n- Content-Length: Indicates the size of the data in the body\n- Host: Specifies the host and port number of the server the request is being sent\n- User-Agent: String that lets servers identify the application, operating system, vendor, and/or version of the requesting agent\n- Accept: Indicates the content types the client can understand\n- Accept-Encoding: Indicates the content encoding that the client can understand\n- Connection: Controls whether the network connection stays open after the current transaction finishes\n- Content-Type: Indicates the media type of the resource, setting the MIME type to application/json\n- Accept: Indicates the content types the client can understand, setting the MIME type to application/json'
-    }, {
-      type: 'markdown',
-      value: 'TODO: '
-    }, {
-      type: 'markdown',
-      value: 'The first step would be to obtain your Bearer Token for authorization using the Get Bearer Token endpoint, using the specified path (https://api.lendflow.com/api/v1/auth/login), and your Lendflow email and password on the body. The response will return an access token that you can use for authorization purposes as well as an expiration timer (in seconds)'
-    }]
-  }, {
-    id: 'apply-for-business-credit',
-    description: '',
-    name: 'Apply for Business Credit',
-    blocks: [/*{
-      type: 'markdown',
-      value: 'This flow is a starting point for '
-    },*/{
-      type: 'markdown',
-      value: '# Fetch an Access Token\nTo get started, you\'ll need to fetch a Bearer Token for authorization the request below.\n\nThe request body accepts your Lendflow email and password. The response will return an access token that you can use for authorization purposes as well as an expiration timer (in seconds).'
-    }, {
-      type: 'request',
-      value: {
-        requestId: 'login',
-        referenceBy: 'login',
-      }
-    }, {
-      type: 'markdown',
-      value: '# Apply for Business Credit\nFill the information on the required fields and you make the API call, the response will contain an application_id or UUID which will be useful to track the credit application on the Lendflow dashboard, as well as a path parameter for future API calls for a specific application'
-    }, {
-      type: 'request',
-      value: {
-        requestId: 'business-credit-application',
-        referenceBy: 'businessCreditApplication'
-      }
-    }]
-  }],
+  flows: [
+    businessCreditApplicationIntroFlow,
+    applyForBusinessCreditFlow,
+    enrichBusinessCreditApplicationFlow,
+  ],
   environments: [{
     id: 'mock',
     name: 'Mock API',
@@ -89,6 +61,44 @@ export const config: FlowsConfig = {
           expires_in: { type: 'number', const: 7200 },
         },
         required: ['access_token', 'token_type', 'expires_in'],
+      },
+      headers: {
+        type: 'object',
+        properties: {
+          status: { type: 'number', const: 200 },
+        },
+        required: ['status']
+      }
+    }
+  }, {
+    id: 'placeholder',
+    method: 'POST',
+    path: '/placeholder',
+    params: {
+      body: {
+        type: 'object',
+        properties: {
+          example: { type: 'string', const: 'this request will be updated soon!' },
+        },
+        required: ['example'],
+      },
+      headers: {
+        type: 'object',
+        properties: {
+          'Content-Type': { type: 'string', const: 'application/json' },
+          Accept: { type: 'string', const: 'application/json' },
+        },
+        required: ['Content-Type', 'Accept'],
+      }
+    },
+    response: {
+      body: {
+        type: 'object',
+        properties: {
+          foo: { type: 'string' },
+          bar: { type: 'string' },
+        },
+        required: ['foo', 'bar'],
       },
       headers: {
         type: 'object',
