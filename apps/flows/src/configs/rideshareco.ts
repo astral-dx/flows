@@ -4,6 +4,11 @@ export const config: FlowsConfig = {
   id: 'rideshareco',
   brand: {
     name: 'Rideshare Co.',
+    colors: {
+      primary: '#282a40',
+      secondary: '#03ff73',
+      tertiary: '#393a4e',
+    },
   },
   flows: [{
     id: 'driver-application',
