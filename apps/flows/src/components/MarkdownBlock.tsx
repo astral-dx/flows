@@ -18,7 +18,12 @@ const components: MarkdownOptions['components'] = {
   h6: ({ children }) => <Typography variant='h6' sx={{ fontSize: '1rem' }}>{ children }</Typography>,
   body: ({ children }) => <Typography variant='body1'>{ children }</Typography>,
   ul: ({ children }) => <List dense>{ children }</List>,
-  li: ({ children }) => <ListItem><b style={{ marginRight: '8px', userSelect: 'none' }}>-</b>{ children }</ListItem>
+  li: ({ children }) => (
+    <ListItem sx={{ gap: '8px', alignItems: 'flex-start' }}>
+      <b style={{ userSelect: 'none' }}>-</b>
+      { children }
+    </ListItem>
+  )
 }
 
 export const MarkdownBlock: React.FC<{ markdown: string }> = ({ markdown }) => {

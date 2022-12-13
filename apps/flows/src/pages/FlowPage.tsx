@@ -32,6 +32,7 @@ const BlocksWrapper = styled('div')(({theme}) => `
 const Footer = styled('div')(({theme}) => `
   border-top: 1px solid ${theme.palette.grey[300]};
   padding: ${theme.spacing(10)};
+  margin-top: ${theme.spacing(8)};
   text-align: center;
 `)
 
@@ -41,6 +42,8 @@ const Logo = styled('img')(({theme}) => `
 
 export const FlowPage = () => {
   const {config, flow} = useLoaderData() as { config: FlowsConfig, flow: Flow }
+
+  console.log({ config, flow })
 
   return (
     <FlowDataProvider constants={config.constants} environments={config.environments}>

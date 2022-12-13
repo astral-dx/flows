@@ -5,7 +5,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Flow, FlowConnection, FlowsConfig } from '..'
 
 const Wrapper = styled('div')(({ theme }) => `
-  margin: ${theme.spacing(5, 0)};
+  margin: ${theme.spacing(2, 0, 0)};
   display: flex;
   justify-content: flex-end;
 `)
