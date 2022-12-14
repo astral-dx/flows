@@ -4,8 +4,9 @@ export const config: FlowsConfig = {
   id: 'rideshareco',
   brand: {
     name: 'Rideshare Co.',
+    logoUrl: '/logo.svg',
     colors: {
-      primary: '#282a40',
+      primary: '#FF1493',
       secondary: '#03ff73',
     },
   },

@@ -24,7 +24,7 @@ const Wrapper = styled('div')(({ theme }) => `
     position: absolute;
     z-index: 0;
     top: 0; right: 0; bottom: 0; left: 0;
-    background-image: radial-gradient(circle at bottom right, ${darken(theme.palette.primary.main, 0.8)}, transparent);
+    background-image: radial-gradient(circle at bottom right, ${darken(theme.palette.primary.main, 0.5)}, transparent);
   }
 
   & > .title-bg::after {
@@ -50,7 +50,6 @@ export const FlowTitle: React.FC<{ flow: Flow, config: FlowsConfig }> = ({ flow,
       <div className="title-bg" />
       <Container maxWidth="md">
         <FlowNavigation config={ config } />
-        <Subtitle variant="subtitle1">{ config.brand.name }</Subtitle>
         <Typography sx={{ marginTop: theme.spacing(1) }} variant="h1">{ flow.name }</Typography>
         <Box marginTop={theme.spacing(2)} display={ 'flex' } alignItems={ 'center'} justifyContent={ 'space-between' }>
           <FlowGraph flow={ flow } />
