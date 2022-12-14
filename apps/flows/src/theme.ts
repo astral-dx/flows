@@ -1,7 +1,7 @@
 
 import { createTheme } from '@mui/material/styles'
 import { red } from '@mui/material/colors'
-import { HTTPMethod } from '.';
+import { FlowBrand, HTTPMethod } from '.';
 
 declare module '@mui/material' {
   interface Palette {
@@ -32,7 +32,7 @@ export const monospacedFontStack = [
 ].join(',')
 
 // Create a theme instance
-export const theme = createTheme({
+export const makeTheme = (brand: FlowBrand) => createTheme({
   typography: {
     fontFamily: [
       '-apple-system',
@@ -83,11 +83,10 @@ export const theme = createTheme({
   },
   palette: {
     primary: {
-      // main: '#7D6FDE',
-      main: '#282a40', // lendflow primary
+      main: brand.colors.primary,
     },
     secondary: {
-      main: '#19857b',
+      main: brand.colors.secondary,
     },
     error: {
       main: red.A400,

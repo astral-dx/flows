@@ -3,7 +3,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { FlowsConfig } from ".."
 
 const Logo = styled('img')(({theme}) => `
-  height: 30px;
+  height: 25px;
 `)
 
 const NavButton = styled(Button)(({theme}) => `
@@ -32,7 +32,7 @@ export const FlowNavigation: React.FC<{ config: FlowsConfig }> = ({ config }) =>
         display={ 'flex' }
         gap={ theme.spacing(4) }
       >
-        <Logo src={ '/astral.solid.svg' } sx={{ marginRight: theme.spacing(2) }} />
+        <Logo src={ config.brand.logoUrl } sx={{ marginRight: theme.spacing(2) }} />
         {/* <NavButton size="small" href={ `/f/${config.id}` }>{ 'Flows' }</NavButton>
         <Tooltip title={ 'Coming Soon' }>
           <div>
@@ -40,15 +40,6 @@ export const FlowNavigation: React.FC<{ config: FlowsConfig }> = ({ config }) =>
           </div>
         </Tooltip> */}
       </Box>
-        <NavButton
-          size="small"
-          endIcon={ <OpenInNewIcon fontSize="small" /> }
-          href="https://astraldx.com"
-          // @ts-ignore
-          target={ '_blank' }
-        >
-          { 'Astral DX' }
-        </NavButton>
     </Box>
   )
 }

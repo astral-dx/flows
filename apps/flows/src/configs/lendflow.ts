@@ -13,6 +13,7 @@ export const config: FlowsConfig = {
   id: 'lendflow',
   brand: {
     name: 'Lendflow',
+    logoUrl: 'https://assets-global.website-files.com/60e7289f994248612b0ddecf/60e7289f9942482bb60ddee6_Lendflow-logo.svg',
     colors: {
       primary: '#282a40',
       secondary: '#03ff73',
