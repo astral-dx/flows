@@ -1,5 +1,5 @@
 import { Flow } from "../../..";
-import { applyForBusinessCreditDashboard } from "../images/apply-for-business-credit-dashboard";
+import { lendflow1Image } from "../images/lendflow1";
 
 export const applyForBusinessCreditFlow: Flow = {
   id: 'apply-for-business-credit',
@@ -31,7 +31,7 @@ export const applyForBusinessCreditFlow: Flow = {
     value: 'You will also be able to see your application on the Lendflow dashboard:'
   }, {
     type: 'image',
-    value: { base64: applyForBusinessCreditDashboard },
+    value: { base64: lendflow1Image },
   }, {
     type: 'markdown',
     value: 'Once the application is started by your client you will receive a webhook notification with the deal UUID. Send a test webhook envent to your system:'
@@ -47,12 +47,12 @@ export const applyForBusinessCreditFlow: Flow = {
     }
   }, {
     type: 'markdown',
-    value: '## Application Complete 🎉\n\nNext, you can proceed to the Underwriting stage with the application, where you can enrich your deals. The Match services on the underwriting stage provides match services for personal and business information (SSN, DOB, BIN, Address, and more) that can enrich your client\'s current application.'
+    value: '## Application Submitted\n\nNext, you can proceed to the Underwriting stage with the application, where you can enrich your deals. The Match services on the underwriting stage provides match services for personal and business information (SSN, DOB, BIN, Address, and more) that can enrich your client\'s current application.'
   }, {
     type: 'connection',
     value: {
-      flowId: 'enrich-business-credit-application',
-      label: 'Enrich Application',
+      flowId: 'add-products-to-business-credit-application',
+      label: 'Add Products to Application',
     }
   }]
 }

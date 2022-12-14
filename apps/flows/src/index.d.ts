@@ -159,7 +159,6 @@ export interface FlowBrand {
   colors: {
     primary: string;
     secondary: string;
-    tertiary: string;
   }
 }
 

@@ -85,7 +85,6 @@ export const theme = createTheme({
     primary: {
       // main: '#7D6FDE',
       main: '#282a40', // lendflow primary
-
     },
     secondary: {
       main: '#19857b',
