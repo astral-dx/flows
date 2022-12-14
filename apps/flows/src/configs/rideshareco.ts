@@ -7,7 +7,6 @@ export const config: FlowsConfig = {
     colors: {
       primary: '#282a40',
       secondary: '#03ff73',
-      tertiary: '#393a4e',
     },
   },
   flows: [{
