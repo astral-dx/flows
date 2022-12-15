@@ -1,26 +1,31 @@
 import { describe, expect, it } from 'vitest';
+import { ReplaceData } from '..';
 import { FlowGlobalContext } from '../hooks/useFlowData';
-import { generateFakerData, generateJSONataData, replace, ReplaceData } from './replace';
+import { generateFakerData, generateJSONataData, replace } from './replace';
 
 describe('replace', () => {
   const globalCtx: FlowGlobalContext = {
     constants: {},
-    responses: {
+    ref: {
       callOne: {
-        body: { 
-          test: 'testing',
-          bool: false
-        },
-        headers: {}
+        response: {
+          body: { 
+            test: 'testing',
+            bool: false
+          },
+          headers: {}
+        }
       },
       callTwo: {
-        body: {},
-        headers: {
-          hello: 'world',
-          number: 123,
-          obj: {
-            test: 123,
-            hello: 'world'
+        response: {
+          body: {},
+          headers: {
+            hello: 'world',
+            number: 123,
+            obj: {
+              test: 123,
+              hello: 'world'
+            }
           }
         }
       }

@@ -15,10 +15,12 @@ export const businessCreditApplicationIntroFlow: Flow = {
     value: {
       requestId: 'login',
       referenceBy: 'login',
-      overrides: {
+      params: {
         body: {
-          email: { type: 'constant', value: 'you@company.com' },
-          password: { type: 'constant', value: '***' },
+          properties: {
+            email: { type: 'text', value: { type: 'constant', value: 'you@company.com' } },
+            password: { type: 'text', value: { type: 'constant', value: '***' } },
+          }
         }
       }
     }

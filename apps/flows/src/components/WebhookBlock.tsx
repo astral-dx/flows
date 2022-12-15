@@ -17,8 +17,8 @@ export const WebhookBlock: React.FC<{
   const theme = useTheme()
 
   const [ webhookUrl, setWebhookUrl ] = useState<string>('');
-  const [ webhookBody, setWebhookBody ] = useState<Record<string, Json>>(replace(webhook.params?.body ?? {}, data, Date.now()) as Record<string, Json>)
-  const [ webhookQueryParams, setWebhookQueryParams ] = useState<Record<string, string>>(replace(webhook.params?.query ?? {}, data, Date.now()) as Record<string, string>)
+  const [ webhookBody, setWebhookBody ] = useState<Record<string, Json>>(replace(webhook.params?.body ?? {}, data, Date.now().toString()) as Record<string, Json>)
+  const [ webhookQueryParams, setWebhookQueryParams ] = useState<Record<string, string>>(replace(webhook.params?.query ?? {}, data, Date.now().toString()) as Record<string, string>)
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ selectedTab, setSelectedTab ] = useState('Body')
 

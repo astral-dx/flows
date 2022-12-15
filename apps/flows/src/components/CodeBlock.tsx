@@ -27,7 +27,7 @@ export const CodeBlock: React.FC<{ snippets: Array<FlowCodeSnippet> }> = ({ snip
   const theme = useTheme()
   const [ snippet, setSnippet ] = useState(snippets[0])
   const [ code, setCode ] = useState(snippets[0].code)
-  const [ seed ] = useState(Date.now())
+  const [ seed ] = useState(Date.now().toString())
 
   useEffect(() => {
     setCode(replace({ type: 'handlebars', statement: snippet.code }, data, seed) as string)
