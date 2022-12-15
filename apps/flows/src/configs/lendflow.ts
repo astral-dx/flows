@@ -7,7 +7,6 @@ import { addCommercialDataToBusinessCreditApplicationFlow } from './lendflow/flo
 import { cashFlowAnalysisForABusinessCreditApplication } from './lendflow/flows/cash-flow-analysis-for-a-business-credit-application';
 import { runAScoreCardOnABusinessCreditApplication } from './lendflow/flows/run-a-score-card-on-a-business-credit-application';
 import { postAuthLoginRequest } from './lendflow/requests/post-auth-login';
-import { postBusinessCreditApplicationRequest } from './lendflow/requests/post-business-credit-application';
 
 export const config: FlowsConfig = {
   id: 'lendflow',
@@ -42,43 +41,37 @@ export const config: FlowsConfig = {
   constants: [],
   requests: [
     postAuthLoginRequest,
-    postBusinessCreditApplicationRequest,
     {
       id: 'placeholder',
       method: 'POST',
       path: '/placeholder',
       params: {
         body: {
-          type: 'object',
           properties: {
-            example: { type: 'string', const: 'this request will be updated soon!' },
+            example: { type: 'text', value: { type: 'constant', value: 'this request will be updated soon!' } },
           },
-          required: ['example'],
         },
         headers: {
-          type: 'object',
           properties: {
-            'Content-Type': { type: 'string', const: 'application/json' },
-            Accept: { type: 'string', const: 'application/json' },
+            'Content-Type': {
+              type: 'text', value: { type: 'constant', value: 'application/json' },
+            },
+            'Accept': {
+              type: 'text', value: { type: 'constant', value: 'application/json' },
+            },
           },
-          required: ['Content-Type', 'Accept'],
         }
       },
       response: {
         body: {
-          type: 'object',
           properties: {
-            foo: { type: 'string' },
-            bar: { type: 'string' },
+            example: { type: 'text', value: { type: 'constant', value: 'this request will be updated soon!' } },
           },
-          required: ['foo', 'bar'],
         },
         headers: {
-          type: 'object',
           properties: {
-            status: { type: 'number', const: 200 },
+            example: { type: 'text', value: { type: 'constant', value: 200 } },
           },
-          required: ['status']
         }
       }
     }

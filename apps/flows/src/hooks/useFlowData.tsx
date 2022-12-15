@@ -1,17 +1,26 @@
 import React, { createContext, useContext, useState } from "react"
+import _merge from 'lodash/merge'
 
 import { FlowConstant, FlowEnvironment, Json } from ".."
 
 export type FlowData = Record<string, Json>;
 
 interface FlowGlobalContextInstance {
-  body: Record<string, Json>;
-  headers: Record<string, Json>;
+  request?: {
+    body?: Record<string, Json>;
+    headers?: Record<string, Json>;
+    query?: Record<string, Json>;
+    path?: Record<string, Json>;
+  }
+  response?: {
+    body?: Record<string, Json>;
+    headers?: Record<string, Json>;
+  }
 }
 
 export type FlowGlobalContext ={
   constants: Record<string, Json>
-  responses?: Record<string, FlowGlobalContextInstance>
+  ref?: Record<string, FlowGlobalContextInstance>
 }
 
 interface FlowDataContextValue {
@@ -46,9 +55,9 @@ export const FlowDataProvider: React.FC<{
   const addFlowData = (ref: string, record: FlowGlobalContextInstance) => {
     setData((d) => ({
       ...d,
-      responses: {
-        ...d.responses,
-        [ref]: record
+      ref: {
+        ...d.ref,
+        [ref]: _merge(d.ref ? d.ref[ref] || {} : {}, record),
       }
     }))
   }

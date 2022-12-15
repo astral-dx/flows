@@ -6,38 +6,34 @@ export const postAuthLoginRequest: FlowRequest = {
   path: '/auth/login',
   params: {
     body: {
-      type: 'object',
       properties: {
-        email: { type: 'string' },
-        password: { type: 'string' }
+        email: { type: 'text', value: { type: 'constant', value: 'you@company.com' } },
+        password: { type: 'secret', value: { type: 'constant', value: '***' } }
       },
-      required: ['email', 'password'],
     },
     headers: {
-      type: 'object',
       properties: {
-        'Content-Type': { type: 'string', const: 'application/json' },
-        Accept: { type: 'string', const: 'application/json' },
+        'Content-Type': {
+          type: 'text', value: { type: 'constant', value: 'application/json' },
+        },
+        'Accept': {
+          type: 'text', value: { type: 'constant', value: 'application/json' },
+        },
       },
-      required: ['Content-Type', 'Accept'],
     }
   },
   response: {
     body: {
-      type: 'object',
       properties: {
-        access_token: { type: 'string' },
-        token_type: { type: 'string', const: 'bearer' },
-        expires_in: { type: 'number', const: 7200 },
+        access_token: { type: 'text', value: { type: 'faker', faker: 'datatype.string', fakerArgs: [256] } },
+        token_type: { type: 'text', value: { type: 'constant', value: 'bearer' } },
+        expires_in: { type: 'text', value: { type: 'constant', value: 7200 } },
       },
-      required: ['access_token', 'token_type', 'expires_in'],
     },
     headers: {
-      type: 'object',
       properties: {
-        status: { type: 'number', const: 200 },
+        status: { type: 'text', value: { type: 'constant', value: 200 } },
       },
-      required: ['status']
     }
   }
 }
