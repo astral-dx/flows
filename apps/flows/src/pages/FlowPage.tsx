@@ -43,6 +43,7 @@ const AstralLink = styled(Link)(({theme}) => `
   align-items: center;
   font-weight: 800;
   text-decoration: none;
+  color: #000;
 `)
 
 const Logo = styled('img')(({theme}) => `
@@ -52,8 +53,6 @@ const Logo = styled('img')(({theme}) => `
 
 export const FlowPage = () => {
   const {config, flow} = useLoaderData() as { config: FlowsConfig, flow: Flow }
-
-  console.log({ config, flow })
 
   return (
     <FlowDataProvider constants={config.constants} environments={config.environments}>

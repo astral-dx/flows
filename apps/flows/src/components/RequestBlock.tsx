@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
+import _merge from 'lodash/merge'
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'
-import { Button, CircularProgress, styled, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
+import { Box, Button, CircularProgress, styled, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
 
-import { FlowsConfig, FlowRequestReference, HTTPMethod, Json } from '..'
+import { FlowsConfig, FlowRequestReference, HTTPMethod, Json, FlowRequestSchema, ReplaceData, FlowRequestProperty } from '..'
 import { useFlowData } from '../hooks/useFlowData'
-import { generate } from '../utilities/generate'
 import { FlowDataInput } from './FlowDataInput'
 import { mockRequest } from '../utilities/mockRequest'
-import { replacePath, replace } from '../utilities/replace'
+import { replacePath, replace, schemaToReplaceData } from '../utilities/replace'
 import { monospacedFontStack } from '../theme'
-import { merge } from '../utilities/merge'
+import { mergeFlattened } from '../utilities/mergeFlattened'
 
 export const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -22,7 +22,6 @@ export const RequestHeader = styled('div')(({ theme }) => `
   padding: ${theme.spacing(3, 3, 2)};
   display: flex;
   align-items: center;
-  /* gap: ${theme.spacing(2)}; */
 `)
 
 export const RequestContent = styled('div')(({ theme }) => `
@@ -69,6 +68,25 @@ const buildUrlPath = (templatePath: string, pathParams: Record<string, Json>, qu
   return path + queryString;
 }
 
+const getDefaultTab = (
+  headersSchema: FlowRequestSchema | undefined,
+  querySchema: FlowRequestSchema | undefined,
+  bodySchema: FlowRequestSchema | FlowRequestProperty | undefined,
+  pathSchema: FlowRequestSchema | undefined,
+): string => {
+  if (typeof pathSchema === 'object' && Object.keys(pathSchema).length > 0) {
+    return 'Path'
+  } else if (typeof bodySchema === 'object' && Object.keys(bodySchema).length > 0) {
+    return 'Body'
+  } else if (typeof querySchema === 'object' && Object.keys(querySchema).length > 0) {
+    return 'Query'
+  } else if (typeof headersSchema === 'object' && Object.keys(headersSchema).length > 0) {
+    return 'Headers'
+  } else {
+    return 'Path'
+  }
+}
+
  /** Request Calculation order:
   *   - Generated data from schema `FlowRequest`.params (not recalculated) (done)
   *   - `FlowRequestReference`.overrides (done)
@@ -84,10 +102,8 @@ const RequestBlock: React.FC<{
   requestRef: FlowRequestReference
 }> = ({ config, requestRef }) => {
   const { activeEnvironment, environments, data, addFlowData } = useFlowData()
-  const [ selectedRequestTab, setSelectedRequestTab ] = useState('Body') // TODO: Switching tabs is causing a re-render
-  const [ selectedResponseTab, setSelectedResponseTab ] = useState('Body') // TODO: Switching tabs is causing a re-render
   const [ loading, setLoading ] = useState(false)
-  const [ seed ] = useState(Date.now())
+  const [ seed ] = useState(Date.now().toString())
   const theme = useTheme()
   // Requests in config should never change
   const request = config.requests.find(req => req.id === requestRef.requestId)
@@ -97,11 +113,23 @@ const RequestBlock: React.FC<{
     return <div>Invalid Request ID</div>
   }
 
+  const [headersSchema] = useState<FlowRequestSchema | undefined>(_merge(request.params?.headers, requestRef.params?.headers))
+  const [querySchema] = useState<FlowRequestSchema | undefined>(_merge(request.params?.query, requestRef.params?.query))
+  const [bodySchema] = useState<FlowRequestSchema | FlowRequestProperty | undefined>(_merge(request.params?.body, requestRef.params?.body))
+  const [pathSchema] = useState<FlowRequestSchema | undefined>(_merge(request.params?.path, requestRef.params?.path))
+  const [responseBodySchema] = useState<FlowRequestSchema | FlowRequestProperty | undefined>(_merge(request.response?.body, requestRef.response?.body))
+  const [responseHeadersSchema] = useState<FlowRequestSchema | undefined>(_merge(request.response?.headers, requestRef.response?.headers))
+
+  const [headerTemplate] = useState<ReplaceData>(schemaToReplaceData(headersSchema) ?? {})
+  const [queryTemplate] = useState<ReplaceData>(schemaToReplaceData(querySchema) ?? {})
+  const [bodyTemplate] = useState<ReplaceData>(schemaToReplaceData(bodySchema) ?? {})
+  const [pathTemplate] = useState<ReplaceData>(schemaToReplaceData(pathSchema) ?? {})
+
   // Generate starting data from FlowRequest
-  const [requestHeaders, setRequestHeaders] = useState<Record<string, Json>>(generate(request.params?.headers ?? {}))
-  const [requestQueryParams, setRequestQueryParams] = useState<Record<string, Json>>(generate(request.params?.query ?? {}))
-  const [requestBody, setRequestBody] = useState<Record<string, Json>>(generate(request.params?.body ?? {}))
-  const [requestPathParams, setRequestPathParams] = useState<Record<string, Json>>(generate(request.params?.path ?? {}))
+  const [requestHeaders, setRequestHeaders] = useState<Record<string, Json>>(replace(headerTemplate, data, seed) as Record<string, Json>)
+  const [requestQuery, setRequestQueryParams] = useState<Record<string, Json>>(replace(queryTemplate, data, seed) as Record<string, Json>)
+  const [requestBody, setRequestBody] = useState<Record<string, Json>>(replace(bodyTemplate, data, seed) as Record<string, Json>)
+  const [requestPath, setRequestPathParams] = useState<Record<string, Json>>(replace(pathTemplate, data, seed) as Record<string, Json>)
 
   const [userInputHeaders, setUserInputHeaders] = useState<Record<string, Json>>({})
   const [userInputQueryParams, setUserInputQueryParams] = useState<Record<string, Json>>({})
@@ -111,34 +139,44 @@ const RequestBlock: React.FC<{
   const [responseHeaders, setResponseHeaders] = useState<Record<string, Json> | undefined>()
   const [responseBody, setResponseBody] = useState<Record<string, Json> | undefined>()
 
+  const [ selectedRequestTab, setSelectedRequestTab ] = useState(
+    getDefaultTab(headersSchema, querySchema, bodySchema, pathSchema)
+  )
+  const [ selectedResponseTab, setSelectedResponseTab ] = useState(
+    getDefaultTab(responseHeadersSchema, undefined, responseBodySchema, undefined)
+  )
+
   // Monitor global context to update requestParams
   useEffect(() => {
-    // TODO: Should be able to calculate where requestHeaders, requestQueryParams, requestBody, requestPathParams
-    //    Since we keep userInput data, we should be able to record if its generated/grabbed from global data/user input
-    setRequestPathParams((pathParams) => (merge(
-      pathParams,
-      replace(requestRef.overrides?.path ?? {}, data, seed) as Record<string, Json>,
+    setRequestPathParams(mergeFlattened(
+      replace(pathTemplate, data, seed) as Record<string, Json>,
       userInputPathParams
-    )))
+    ))
     
-    setRequestBody((body) => merge(
-      body,
-      replace(requestRef.overrides?.body ?? {}, data, seed) as Record<string, Json>,
+    setRequestBody(mergeFlattened(
+      replace(bodyTemplate, data, seed) as Record<string, Json>,
       userInputBody
-    ));
+    ))
 
-    setRequestHeaders((headers) => (merge(
-      headers,
-      replace(requestRef.overrides?.headers ?? {}, data, seed) as Record<string, Json>,
+    setRequestHeaders(mergeFlattened(
+      replace(headerTemplate, data, seed) as Record<string, Json>,
       userInputHeaders
-    )))
+    ))
 
-    setRequestQueryParams((queryParams) => (merge(
-      queryParams,
-      replace(requestRef.overrides?.query ?? {}, data, seed) as Record<string, Json>,
+    setRequestQueryParams(mergeFlattened(
+      replace(queryTemplate, data, seed) as Record<string, Json>,
       userInputQueryParams
-    )))
+    ))
   }, [ data, userInputPathParams, userInputBody, userInputHeaders, userInputQueryParams ]);
+
+  useEffect(() => {
+    addFlowData(requestRef.referenceBy, { request: {
+      headers: requestHeaders,
+      query: requestQuery,
+      body: requestBody,
+      path: requestPath,
+    } })
+  }, [ requestHeaders, requestQuery, requestBody, requestPath ])
 
   const onSendRequest = async () => {
     setLoading(true)
@@ -146,13 +184,16 @@ const RequestBlock: React.FC<{
     let headers: Record<string, Json> = {}
 
     if (activeEnvironment?.type === 'mock') {
-      const res = await mockRequest(request.response?.body, request.response?.headers)
+      const responseBodyTemplate = schemaToReplaceData(responseBodySchema) ?? {}
+      const responseHeadersTemplate = schemaToReplaceData(responseHeadersSchema) ?? {}
+
+      const res = await mockRequest(responseBodyTemplate, responseHeadersTemplate, data, seed)
       
       body = res.body
       headers = res.headers
     } else {
       try {
-        const url = environments[0].host + buildUrlPath(request.path, requestPathParams, requestQueryParams);
+        const url = environments[0].host + buildUrlPath(request.path, requestPath, requestQuery);
 
         await fetch(url, {
           method: request.method,
@@ -164,7 +205,7 @@ const RequestBlock: React.FC<{
       }
     }
     
-    addFlowData(requestRef.referenceBy, { body, headers })
+    addFlowData(requestRef.referenceBy, { response: { body, headers } })
     setResponseBody(body)
     setResponseHeaders(headers)
     setLoading(false)
@@ -189,7 +230,7 @@ const RequestBlock: React.FC<{
             }
           }}
           margin={ 'none' }
-          value={ environments[0].host + buildUrlPath(request.path, requestPathParams, requestQueryParams) }
+          value={ environments[0].host + buildUrlPath(request.path, requestPath, requestQuery) }
           disabled
           fullWidth
         />
@@ -215,65 +256,80 @@ const RequestBlock: React.FC<{
       <RequestContent>
         <Tabs value={selectedRequestTab} onChange={(_, tab) => setSelectedRequestTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
           <TabLabel variant="caption">Request</TabLabel>
+          <Tab label='Path' value='Path' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
           <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
           <Tab label='Query' value='Query' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
           <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
         </Tabs>
-        { selectedRequestTab === 'Body' && requestBody && Object.keys(requestBody).length > 0 && (
-          <FlowDataInput
-            data={ requestBody }
-            type={ 'generated' }
-            onChange={(key, val) => setUserInputBody((d) => merge(d, { [key]: val }))}
-          />
-        ) }
-        { selectedRequestTab === 'Body' && (!requestBody || Object.keys(requestBody).length === 0) && (
-          <NoContentText>No request body</NoContentText>
-        ) }
-        { selectedRequestTab === 'Query' && requestQueryParams && Object.keys(requestQueryParams).length > 0 && (
-          <FlowDataInput
-            data={ requestQueryParams }
-            type={ 'generated' }
-            onChange={(key, val) => setUserInputQueryParams((d) => merge(d, { [key]: val }))}
-          />
-        ) }
-        { selectedRequestTab === 'Query' && (!requestQueryParams || Object.keys(requestQueryParams).length === 0) && (
-          <NoContentText>No request query</NoContentText>
-        ) }
-        { selectedRequestTab === 'Headers' && requestHeaders && Object.keys(requestHeaders).length > 0 && (
-          <FlowDataInput
-            data={ requestHeaders }
-            type={ 'generated' }
-            onChange={(key, val) => setUserInputHeaders((d) => merge(d, { [key]: val }))}
-          />
-        ) }
-        { selectedRequestTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (
-          <NoContentText>No request headers</NoContentText>
-        ) }
+        <Box sx={{ maxHeight: '300px', overflow: 'scroll' }}>
+          { selectedRequestTab === 'Path' && requestPath && Object.keys(requestPath).length > 0 && (
+            <FlowDataInput
+              data={ requestPath }
+              type={ 'generated' }
+              onChange={(key, val) => setUserInputPathParams((d) => mergeFlattened(d, { [key]: val }))}
+            />
+          ) }
+          { selectedRequestTab === 'Path' && (!requestPath || Object.keys(requestPath).length === 0) && (
+            <NoContentText>No path parameters</NoContentText>
+          ) }
+          { selectedRequestTab === 'Body' && requestBody && Object.keys(requestBody).length > 0 && (
+            <FlowDataInput
+              data={ requestBody }
+              type={ 'generated' }
+              onChange={(key, val) => setUserInputBody((d) => mergeFlattened(d, { [key]: val }))}
+            />
+          ) }
+          { selectedRequestTab === 'Body' && (!requestBody || Object.keys(requestBody).length === 0) && (
+            <NoContentText>No request body</NoContentText>
+          ) }
+          { selectedRequestTab === 'Query' && requestQuery && Object.keys(requestQuery).length > 0 && (
+            <FlowDataInput
+              data={ requestQuery }
+              type={ 'generated' }
+              onChange={(key, val) => setUserInputQueryParams((d) => mergeFlattened(d, { [key]: val }))}
+            />
+          ) }
+          { selectedRequestTab === 'Query' && (!requestQuery || Object.keys(requestQuery).length === 0) && (
+            <NoContentText>No request query</NoContentText>
+          ) }
+          { selectedRequestTab === 'Headers' && requestHeaders && Object.keys(requestHeaders).length > 0 && (
+            <FlowDataInput
+              data={ requestHeaders }
+              type={ 'generated' }
+              onChange={(key, val) => setUserInputHeaders((d) => mergeFlattened(d, { [key]: val }))}
+            />
+          ) }
+          { selectedRequestTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (
+            <NoContentText>No request headers</NoContentText>
+          ) }
+        </Box>
         <Tabs value={selectedResponseTab} onChange={(_, tab) => setSelectedResponseTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
           <TabLabel variant="caption">Response</TabLabel>
           <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
           <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
         </Tabs>
-        { selectedResponseTab === 'Body' && responseBody && (
-          <FlowDataInput
-            data={ responseBody }
-            type={ activeEnvironment?.type === 'mock' ? 'mock-response' : 'api-response' }
-            disabled
-          />
-        ) }
-        { selectedResponseTab === 'Body' && !responseBody && (
-          <NoContentText>No Response Body</NoContentText>
-        ) }
-        { selectedResponseTab === 'Headers' && responseHeaders && (
-          <FlowDataInput
-            data={ responseHeaders }
-            type={ activeEnvironment?.type === 'mock' ? 'mock-response' : 'api-response' }
-            disabled
-          />
-        ) }
-        { selectedResponseTab === 'Headers' && !responseBody && (
-          <NoContentText>No Response Headers</NoContentText>
-        ) }
+        <Box sx={{ maxHeight: '300px', overflow: 'scroll' }}>
+          { selectedResponseTab === 'Body' && responseBody && (
+            <FlowDataInput
+              data={ responseBody }
+              type={ activeEnvironment?.type === 'mock' ? 'mock-response' : 'api-response' }
+              disabled
+            />
+          ) }
+          { selectedResponseTab === 'Body' && !responseBody && (
+            <NoContentText>No Response Body</NoContentText>
+          ) }
+          { selectedResponseTab === 'Headers' && responseHeaders && (
+            <FlowDataInput
+              data={ responseHeaders }
+              type={ activeEnvironment?.type === 'mock' ? 'mock-response' : 'api-response' }
+              disabled
+            />
+          ) }
+          { selectedResponseTab === 'Headers' && !responseBody && (
+            <NoContentText>No Response Headers</NoContentText>
+          ) }
+        </Box>
       </RequestContent>
     </Wrapper>
   )

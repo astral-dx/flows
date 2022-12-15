@@ -8,7 +8,7 @@ import { replace } from "../utilities/replace";
 import { monospacedFontStack } from '../theme'
 import { Method, NoContentText, RequestContent, RequestHeader, TabLabel, Wrapper } from "./RequestBlock";
 import { FlowDataInput } from "./FlowDataInput";
-import { merge } from "../utilities/merge";
+import { mergeFlattened } from "../utilities/mergeFlattened";
 
 export const WebhookBlock: React.FC<{
   webhook: FlowWebhook
@@ -100,7 +100,7 @@ export const WebhookBlock: React.FC<{
           <FlowDataInput
             data={ webhookBody }
             type={ 'generated' }
-            onChange={(key, val) => setWebhookBody((d) => merge(d, { [key]: val }))}
+            onChange={(key, val) => setWebhookBody((d) => mergeFlattened(d, { [key]: val }))}
           />
         ) }
         { selectedTab === 'Body' && (!webhookBody || Object.keys(webhookBody).length === 0) && (
@@ -110,7 +110,7 @@ export const WebhookBlock: React.FC<{
           <FlowDataInput
             data={ webhookQueryParams }
             type={ 'generated' }
-            onChange={(key, val) => setWebhookQueryParams((d) => merge(d, { [key]: val }) as Record<string, string>)}
+            onChange={(key, val) => setWebhookQueryParams((d) => mergeFlattened(d, { [key]: val }) as Record<string, string>)}
           />
         ) }
         { selectedTab === 'Query' && (!webhookQueryParams || Object.keys(webhookQueryParams).length === 0) && (
