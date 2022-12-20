@@ -8,6 +8,7 @@ import flatten from 'flat'
 
 import { monospacedFontStack } from "../theme"
 import { FlowData } from "../hooks/useFlowData"
+import { lazy } from "react"
 
 const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -15,17 +16,21 @@ const Wrapper = styled('div')(({ theme }) => `
   margin: ${theme.spacing(2, 3, 3)};
 `)
 
+const MonacoEditor = lazy(() => import('@monaco-editor/react'));
+
 export type FlowDataInputType = 'static' | 'generated' | 'api-response' | 'mock-response'
 
 interface FlowDataInputParams {
   data: FlowData
   type: FlowDataInputType
-  onChange?: (key: string, val: string) => void 
+  onChange?: (key: string, val: any) => void
+  onDeleteKey?: (keys: string) => void
   disabled?: boolean
+  showSource?: boolean;
 }
 
 // TODO: Add button to clear user input/revert back (will need to remove key from userInput data in RequestBlock)
-export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onChange, disabled = false }) => {
+export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onChange, showSource, disabled = false, onDeleteKey }) => {
   const theme = useTheme();
 
   const handleChange = (key: string, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -34,9 +39,34 @@ export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onCha
     }
   };
 
+  const onSourceChange = (value?: string) => {
+    if (!value) {
+      return;
+    }
+    
+    try {
+      const oldVal = flatten(data) as Record<string, unknown>;
+      const newVal = flatten(JSON.parse(value)) as Record<string, unknown>;
+
+      for (let key in { ...newVal, ...oldVal }) {
+        if (key in newVal === false) {
+          if (onDeleteKey) {
+            onDeleteKey(key);
+          }
+        } else if (newVal[key] !== oldVal[key]) {
+          if (onChange) {
+            onChange(key, newVal[key]);
+          }
+        }
+      }
+    } catch (e) {
+
+    }
+  }
+  
   return (
     <Wrapper>
-      { Object.keys(flatten(data)).map((key, i) => (
+      { !showSource && Object.keys(flatten(data)).map((key, i) => (
         <TextField
           InputProps={{
             sx: {
@@ -84,7 +114,21 @@ export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onCha
           onChange={ (e) => handleChange(key, e) }
           disabled={ disabled }
         />
-        )) }
+      ))}
+      { !showSource && (
+        <MonacoEditor
+          value={JSON.stringify(data, null, 2)}
+          height="200px"
+          language="json"
+          onChange={onSourceChange}
+          options={{
+            scrollBeyondLastLine: false,
+            minimap: {
+              enabled: false
+            }
+          }}
+        />
+      )}
     </Wrapper>
   )
 }

@@ -148,6 +148,7 @@ const RequestBlock: React.FC<{
 
   // Monitor global context to update requestParams
   useEffect(() => {
+    console.log('useEffect');
     setRequestPathParams(mergeFlattened(
       replace(pathTemplate, data, seed) as Record<string, Json>,
       userInputPathParams
@@ -167,16 +168,18 @@ const RequestBlock: React.FC<{
       replace(queryTemplate, data, seed) as Record<string, Json>,
       userInputQueryParams
     ))
-  }, [ data, userInputPathParams, userInputBody, userInputHeaders, userInputQueryParams ]);
 
-  useEffect(() => {
     addFlowData(requestRef.referenceBy, { request: {
       headers: requestHeaders,
       query: requestQuery,
       body: requestBody,
       path: requestPath,
     } })
-  }, [ requestHeaders, requestQuery, requestBody, requestPath ])
+  }, [ data, userInputPathParams, userInputBody, userInputHeaders, userInputQueryParams ]);
+
+  useEffect(() => {
+    
+  }, [requestHeaders, requestQuery, requestBody, requestPath])
 
   const onSendRequest = async () => {
     setLoading(true)
@@ -267,6 +270,7 @@ const RequestBlock: React.FC<{
               data={ requestPath }
               type={ 'generated' }
               onChange={(key, val) => setUserInputPathParams((d) => mergeFlattened(d, { [key]: val }))}
+              onDeleteKey={(key) => setUserInputPathParams((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Path' && (!requestPath || Object.keys(requestPath).length === 0) && (
@@ -277,6 +281,7 @@ const RequestBlock: React.FC<{
               data={ requestBody }
               type={ 'generated' }
               onChange={(key, val) => setUserInputBody((d) => mergeFlattened(d, { [key]: val }))}
+              onDeleteKey={(key) => setUserInputBody((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Body' && (!requestBody || Object.keys(requestBody).length === 0) && (
@@ -287,6 +292,7 @@ const RequestBlock: React.FC<{
               data={ requestQuery }
               type={ 'generated' }
               onChange={(key, val) => setUserInputQueryParams((d) => mergeFlattened(d, { [key]: val }))}
+              onDeleteKey={(key) => setUserInputQueryParams((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Query' && (!requestQuery || Object.keys(requestQuery).length === 0) && (
@@ -297,6 +303,7 @@ const RequestBlock: React.FC<{
               data={ requestHeaders }
               type={ 'generated' }
               onChange={(key, val) => setUserInputHeaders((d) => mergeFlattened(d, { [key]: val }))}
+              onDeleteKey={(key) => setUserInputHeaders((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (
