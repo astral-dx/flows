@@ -10,7 +10,7 @@ import themes from 'monaco-themes'
 
 import { monospacedFontStack } from "../theme"
 import { FlowData } from "../hooks/useFlowData"
-import { lazy, useEffect, useState } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { editor } from "monaco-editor"
 import { useMonaco } from "@monaco-editor/react"
 
@@ -135,17 +135,19 @@ export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onCha
       </Wrapper>
     ) }
     { requestDataDisplayMode === 'json' && (
-      <MonacoEditor
-      value={JSON.stringify(data, null, 2)}
-      height="200px"
-      language="json"
-      onMount={onEditorMount}
-      options={{
-        scrollBeyondLastLine: false,
-        minimap: { enabled: false },
-        readOnly: disabled,
-      }}
-    />
+      <Suspense>
+        <MonacoEditor
+          value={JSON.stringify(data, null, 2)}
+          height="200px"
+          language="json"
+          onMount={onEditorMount}
+          options={{
+            scrollBeyondLastLine: false,
+            minimap: { enabled: false },
+            readOnly: disabled,
+          }}
+        />
+      </Suspense>
     )}
     </>
   )
