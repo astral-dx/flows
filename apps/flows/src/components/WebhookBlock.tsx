@@ -13,7 +13,7 @@ import { mergeFlattened } from "../utilities/mergeFlattened";
 export const WebhookBlock: React.FC<{
   webhook: FlowWebhook
 }> = ({ webhook }) => {
-  const { data } = useFlowData()
+  const { data, requestDataDisplayMode } = useFlowData()
   const theme = useTheme()
 
   const [ webhookUrl, setWebhookUrl ] = useState<string>('');
@@ -100,6 +100,7 @@ export const WebhookBlock: React.FC<{
           <FlowDataInput
             data={ webhookBody }
             type={ 'generated' }
+            requestDataDisplayMode={ requestDataDisplayMode }
             onChange={(key, val) => setWebhookBody((d) => mergeFlattened(d, { [key]: val }))}
           />
         ) }
@@ -110,6 +111,7 @@ export const WebhookBlock: React.FC<{
           <FlowDataInput
             data={ webhookQueryParams }
             type={ 'generated' }
+            requestDataDisplayMode={ requestDataDisplayMode }
             onChange={(key, val) => setWebhookQueryParams((d) => mergeFlattened(d, { [key]: val }) as Record<string, string>)}
           />
         ) }
