@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react"
+import React, { createContext, Dispatch, SetStateAction, useContext, useState } from "react"
 import _merge from 'lodash/merge'
 
 import { FlowConstant, FlowEnvironment, Json } from ".."
@@ -29,6 +29,8 @@ interface FlowDataContextValue {
   activeEnvironment?: FlowEnvironment;
   addFlowData: (ref: string, record: FlowGlobalContextInstance) => void;
   setActiveEnvironment: (envId: string) => void;
+  requestDataDisplayMode: 'json' | 'textFields';
+  setRequestDataDisplayMode: Dispatch<SetStateAction<'json' | 'textFields'>>;
 }
 
 const FlowDataContext = createContext<FlowDataContextValue>({
@@ -38,7 +40,9 @@ const FlowDataContext = createContext<FlowDataContextValue>({
   environments: [],
   activeEnvironment: undefined,
   addFlowData: () => {},
-  setActiveEnvironment: () => {}
+  setActiveEnvironment: () => {},
+  requestDataDisplayMode: 'textFields',
+  setRequestDataDisplayMode: () => {},
 })
 
 export const FlowDataProvider: React.FC<{
@@ -50,7 +54,9 @@ export const FlowDataProvider: React.FC<{
     constants: constants.reduce((acc, cur) => ({ ...acc, [cur.referenceBy]: cur.value }), {})
   })
 
-  const [activeEnvironment, setActiveEnvironmentData] = useState(environments[0]);
+  const [requestDataDisplayMode, setRequestDataDisplayMode] = useState<'json' | 'textFields'>('textFields')
+
+  const [activeEnvironment, setActiveEnvironmentData] = useState(environments[0])
 
   const addFlowData = (ref: string, record: FlowGlobalContextInstance) => {
     setData((d) => ({
@@ -73,7 +79,7 @@ export const FlowDataProvider: React.FC<{
   }
 
   return (
-    <FlowDataContext.Provider value={{ data, addFlowData, environments, activeEnvironment, setActiveEnvironment }}>
+    <FlowDataContext.Provider value={{ data, addFlowData, environments, activeEnvironment, setActiveEnvironment, requestDataDisplayMode, setRequestDataDisplayMode }}>
       { children }
     </FlowDataContext.Provider>
   )

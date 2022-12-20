@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import _merge from 'lodash/merge'
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite'
-import { Box, Button, CircularProgress, styled, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
+import { Box, Button, CircularProgress, styled, Tab, Tabs, TextField, ToggleButton, ToggleButtonGroup, Typography, useTheme } from '@mui/material'
+import DataObjectIcon from '@mui/icons-material/DataObject'
+import TextFieldsIcon from '@mui/icons-material/TextFields'
 
 import { FlowsConfig, FlowRequestReference, HTTPMethod, Json, FlowRequestSchema, ReplaceData, FlowRequestProperty } from '..'
 import { useFlowData } from '../hooks/useFlowData'
@@ -52,7 +54,6 @@ export const Method = styled('div')<{ method: HTTPMethod }>(({ theme, method }) 
 `)
 
 export const TabLabel = styled(Typography)(({ theme }) => `
-  padding: ${theme.spacing(2, 4)};
   text-transform: uppercase;
   letter-spacing: 0.1rem;
   font-weight: 800;
@@ -101,7 +102,7 @@ const RequestBlock: React.FC<{
   config: FlowsConfig,
   requestRef: FlowRequestReference
 }> = ({ config, requestRef }) => {
-  const { activeEnvironment, environments, data, addFlowData } = useFlowData()
+  const { activeEnvironment, environments, data, addFlowData, requestDataDisplayMode, setRequestDataDisplayMode } = useFlowData()
   const [ loading, setLoading ] = useState(false)
   const [ seed ] = useState(Date.now().toString())
   const theme = useTheme()
@@ -169,19 +170,17 @@ const RequestBlock: React.FC<{
     ))
   }, [ data, userInputPathParams, userInputBody, userInputHeaders, userInputQueryParams ]);
 
-  useEffect(() => {
+  const onSendRequest = async () => {
+    setLoading(true)
+    let body: Record<string, Json> = {}
+    let headers: Record<string, Json> = {}
+
     addFlowData(requestRef.referenceBy, { request: {
       headers: requestHeaders,
       query: requestQuery,
       body: requestBody,
       path: requestPath,
     } })
-  }, [ requestHeaders, requestQuery, requestBody, requestPath ])
-
-  const onSendRequest = async () => {
-    setLoading(true)
-    let body: Record<string, Json> = {}
-    let headers: Record<string, Json> = {}
 
     if (activeEnvironment?.type === 'mock') {
       const responseBodyTemplate = schemaToReplaceData(responseBodySchema) ?? {}
@@ -254,19 +253,46 @@ const RequestBlock: React.FC<{
         </Button>
       </RequestHeader>
       <RequestContent>
-        <Tabs value={selectedRequestTab} onChange={(_, tab) => setSelectedRequestTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
-          <TabLabel variant="caption">Request</TabLabel>
-          <Tab label='Path' value='Path' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-          <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-          <Tab label='Query' value='Query' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-          <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-        </Tabs>
-        <Box sx={{ maxHeight: '300px', overflow: 'scroll' }}>
+        <Box
+          display={ 'flex' }
+          alignItems={ 'center' }
+          justifyContent={ 'space-between' }
+          borderBottom={ `1px solid ${theme.palette.grey[300]}` }
+          paddingX={ theme.spacing(4) }
+        >
+          <Box display={ 'flex' } alignItems={ 'center' }>
+            <TabLabel variant="caption" sx={{ paddingRight: theme.spacing(3) }}>Request</TabLabel>
+            <Tabs value={selectedRequestTab} onChange={(_, tab) => setSelectedRequestTab(tab)}>
+              <Tab label='Path' value='Path' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+              <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+              <Tab label='Query' value='Query' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+              <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+            </Tabs>
+          </Box>
+          <Box>
+            <ToggleButtonGroup
+              exclusive
+              size={ 'small' }
+              value={ requestDataDisplayMode }
+              onChange={ (_, value: 'json' | 'textFields' | null) => setRequestDataDisplayMode(value ?? requestDataDisplayMode) }
+            >
+              <ToggleButton value="textFields" aria-label="Text Fields View">
+                <TextFieldsIcon fontSize={ 'small' } />
+              </ToggleButton>
+              <ToggleButton value="json" aria-label="JSON View">
+                <DataObjectIcon fontSize={ 'small' } />
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+        </Box>
+        <Box sx={{ height: '200px', overflow: 'scroll' }}>
           { selectedRequestTab === 'Path' && requestPath && Object.keys(requestPath).length > 0 && (
             <FlowDataInput
               data={ requestPath }
               type={ 'generated' }
+              requestDataDisplayMode={ requestDataDisplayMode }
               onChange={(key, val) => setUserInputPathParams((d) => mergeFlattened(d, { [key]: val }))}
+              onDeleteKey={(key) => setUserInputPathParams((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Path' && (!requestPath || Object.keys(requestPath).length === 0) && (
@@ -276,7 +302,9 @@ const RequestBlock: React.FC<{
             <FlowDataInput
               data={ requestBody }
               type={ 'generated' }
+              requestDataDisplayMode={ requestDataDisplayMode }
               onChange={(key, val) => setUserInputBody((d) => mergeFlattened(d, { [key]: val }))}
+              onDeleteKey={(key) => setUserInputBody((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Body' && (!requestBody || Object.keys(requestBody).length === 0) && (
@@ -286,7 +314,9 @@ const RequestBlock: React.FC<{
             <FlowDataInput
               data={ requestQuery }
               type={ 'generated' }
+              requestDataDisplayMode={ requestDataDisplayMode }
               onChange={(key, val) => setUserInputQueryParams((d) => mergeFlattened(d, { [key]: val }))}
+              onDeleteKey={(key) => setUserInputQueryParams((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Query' && (!requestQuery || Object.keys(requestQuery).length === 0) && (
@@ -296,23 +326,36 @@ const RequestBlock: React.FC<{
             <FlowDataInput
               data={ requestHeaders }
               type={ 'generated' }
+              requestDataDisplayMode={ requestDataDisplayMode }
               onChange={(key, val) => setUserInputHeaders((d) => mergeFlattened(d, { [key]: val }))}
+              onDeleteKey={(key) => setUserInputHeaders((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (
             <NoContentText>No request headers</NoContentText>
           ) }
         </Box>
-        <Tabs value={selectedResponseTab} onChange={(_, tab) => setSelectedResponseTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
-          <TabLabel variant="caption">Response</TabLabel>
-          <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-          <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
-        </Tabs>
-        <Box sx={{ maxHeight: '300px', overflow: 'scroll' }}>
+        <Box
+          display={ 'flex' }
+          alignItems={ 'center' }
+          justifyContent={ 'space-between' }
+          borderBottom={ `1px solid ${theme.palette.grey[300]}` }
+          paddingX={ theme.spacing(4) }
+        >
+          <Box display={ 'flex' } alignItems={ 'center' }>
+            <TabLabel variant="caption" sx={{ paddingRight: theme.spacing(3) }}>Response</TabLabel>
+            <Tabs value={selectedResponseTab} onChange={(_, tab) => setSelectedResponseTab(tab)} sx={{ borderBottom: `1px solid ${theme.palette.grey[300]}`}}>
+              <Tab label='Body' value='Body' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+              <Tab label='Headers' value='Headers' sx={{ fontWeight: 700, textTransform: 'capitalize' }} />
+            </Tabs>
+          </Box>
+        </Box>
+        <Box sx={{ height: '200px', overflow: 'scroll' }}>
           { selectedResponseTab === 'Body' && responseBody && (
             <FlowDataInput
               data={ responseBody }
               type={ activeEnvironment?.type === 'mock' ? 'mock-response' : 'api-response' }
+              requestDataDisplayMode={ requestDataDisplayMode }
               disabled
             />
           ) }
@@ -323,6 +366,7 @@ const RequestBlock: React.FC<{
             <FlowDataInput
               data={ responseHeaders }
               type={ activeEnvironment?.type === 'mock' ? 'mock-response' : 'api-response' }
+              requestDataDisplayMode={ requestDataDisplayMode }
               disabled
             />
           ) }
