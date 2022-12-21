@@ -11,7 +11,6 @@ import { FlowDataInput } from './FlowDataInput'
 import { mockRequest } from '../utilities/mockRequest'
 import { replacePath, replace, schemaToReplaceData } from '../utilities/replace'
 import { monospacedFontStack } from '../theme'
-import { mergeFlattened } from '../utilities/mergeFlattened'
 
 export const Wrapper = styled('div')(({ theme }) => `
   display: flex;
@@ -292,7 +291,6 @@ const RequestBlock: React.FC<{
               type={ 'generated' }
               requestDataDisplayMode={ requestDataDisplayMode }
               onChange={(d) => setUserInputPathParams(d)}
-              onDeleteKey={(key) => setUserInputPathParams((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Path' && (!requestPath || Object.keys(requestPath).length === 0) && (
@@ -304,7 +302,6 @@ const RequestBlock: React.FC<{
               type={ 'generated' }
               requestDataDisplayMode={ requestDataDisplayMode }
               onChange={(d) => setUserInputBody(d)}
-              onDeleteKey={(key) => setUserInputBody((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Body' && (!requestBody || Object.keys(requestBody).length === 0) && (
@@ -316,7 +313,6 @@ const RequestBlock: React.FC<{
               type={ 'generated' }
               requestDataDisplayMode={ requestDataDisplayMode }
               onChange={(d) => setUserInputQueryParams(d)}
-              onDeleteKey={(key) => setUserInputQueryParams((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Query' && (!requestQuery || Object.keys(requestQuery).length === 0) && (
@@ -328,7 +324,6 @@ const RequestBlock: React.FC<{
               type={ 'generated' }
               requestDataDisplayMode={ requestDataDisplayMode }
               onChange={(d) => setUserInputHeaders(d)}
-              onDeleteKey={(key) => setUserInputHeaders((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
           { selectedRequestTab === 'Headers' && (!requestHeaders || Object.keys(requestHeaders).length === 0) && (

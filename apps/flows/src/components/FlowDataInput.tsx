@@ -43,13 +43,12 @@ interface FlowDataInputParams {
   data: FlowData
   type: FlowDataInputType
   onChange?: (data: FlowData) => void
-  onDeleteKey?: (keys: string) => void
   disabled?: boolean
   requestDataDisplayMode: 'json' | 'textFields';
 }
 
 // TODO: Add button to clear user input/revert back (will need to remove key from userInput data in RequestBlock)
-export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onChange, requestDataDisplayMode, disabled = false, onDeleteKey }) => {
+export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onChange, requestDataDisplayMode, disabled = false }) => {
   const theme = useTheme();
   const monaco = useMonaco();
   const [editor, setEditor] = useState<editor.ICodeEditor | undefined>(undefined);
