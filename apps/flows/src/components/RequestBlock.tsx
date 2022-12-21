@@ -149,22 +149,22 @@ const RequestBlock: React.FC<{
 
   // Monitor global context to update requestParams
   useEffect(() => {
-    setRequestPathParams(mergeFlattened(
+    setRequestPathParams(_merge(
       replace(pathTemplate, data, seed) as Record<string, Json>,
       userInputPathParams
     ))
     
-    setRequestBody(mergeFlattened(
+    setRequestBody(_merge(
       replace(bodyTemplate, data, seed) as Record<string, Json>,
       userInputBody
     ))
 
-    setRequestHeaders(mergeFlattened(
+    setRequestHeaders(_merge(
       replace(headerTemplate, data, seed) as Record<string, Json>,
       userInputHeaders
     ))
 
-    setRequestQueryParams(mergeFlattened(
+    setRequestQueryParams(_merge(
       replace(queryTemplate, data, seed) as Record<string, Json>,
       userInputQueryParams
     ))
@@ -201,7 +201,7 @@ const RequestBlock: React.FC<{
         })
       } catch (error) {
         console.error(error);
-      }
+      } 
     }
     
     addFlowData(requestRef.referenceBy, { response: { body, headers } })
@@ -291,7 +291,7 @@ const RequestBlock: React.FC<{
               data={ requestPath }
               type={ 'generated' }
               requestDataDisplayMode={ requestDataDisplayMode }
-              onChange={(key, val) => setUserInputPathParams((d) => mergeFlattened(d, { [key]: val }))}
+              onChange={(d) => setUserInputPathParams(d)}
               onDeleteKey={(key) => setUserInputPathParams((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
@@ -303,7 +303,7 @@ const RequestBlock: React.FC<{
               data={ requestBody }
               type={ 'generated' }
               requestDataDisplayMode={ requestDataDisplayMode }
-              onChange={(key, val) => setUserInputBody((d) => mergeFlattened(d, { [key]: val }))}
+              onChange={(d) => setUserInputBody(d)}
               onDeleteKey={(key) => setUserInputBody((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
@@ -315,7 +315,7 @@ const RequestBlock: React.FC<{
               data={ requestQuery }
               type={ 'generated' }
               requestDataDisplayMode={ requestDataDisplayMode }
-              onChange={(key, val) => setUserInputQueryParams((d) => mergeFlattened(d, { [key]: val }))}
+              onChange={(d) => setUserInputQueryParams(d)}
               onDeleteKey={(key) => setUserInputQueryParams((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }
@@ -327,7 +327,7 @@ const RequestBlock: React.FC<{
               data={ requestHeaders }
               type={ 'generated' }
               requestDataDisplayMode={ requestDataDisplayMode }
-              onChange={(key, val) => setUserInputHeaders((d) => mergeFlattened(d, { [key]: val }))}
+              onChange={(d) => setUserInputHeaders(d)}
               onDeleteKey={(key) => setUserInputHeaders((d) => mergeFlattened(d, { [key]: null }))}
             />
           ) }

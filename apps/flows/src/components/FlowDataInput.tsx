@@ -1,12 +1,12 @@
-import { Box, InputAdornment, styled, TextField, Tooltip, useTheme } from "@mui/material"
+import { InputAdornment, styled, TextField, Tooltip, useTheme } from "@mui/material"
 import _get from 'lodash/get'
+import _set from 'lodash/set'
+import _clone from 'lodash/clone'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
 import BoltIcon from '@mui/icons-material/Bolt'
 import PublicIcon from '@mui/icons-material/Public'
 import PublicOffIcon from '@mui/icons-material/PublicOff'
 import flatten from 'flat'
-// @ts-ignore
-import themes from 'monaco-themes'
 
 import { monospacedFontStack } from "../theme"
 import { FlowData } from "../hooks/useFlowData"
@@ -24,10 +24,25 @@ const MonacoEditor = lazy(() => import('@monaco-editor/react'));
 
 export type FlowDataInputType = 'static' | 'generated' | 'api-response' | 'mock-response'
 
+function isNumeric(value: string) {
+  return /^-?\d+$/.test(value);
+}
+
+const isValidProperty = (data: FlowData, editorData: Record<string, unknown>, key: string): boolean => {
+  const currentValue = _get(data, key)
+  const editorValue = editorData[key]
+
+  const searchKey = key.split('.').map(p => isNumeric(p) ? '?' : p).join('.')
+  const validKeys = Object.keys(flatten(data))
+    .map(k => k.split('.').map(p => isNumeric(p) ? '?' : p).join('.'))
+
+  return validKeys.includes(searchKey) && editorValue !== currentValue
+}
+
 interface FlowDataInputParams {
   data: FlowData
   type: FlowDataInputType
-  onChange?: (key: string, val: any) => void
+  onChange?: (data: FlowData) => void
   onDeleteKey?: (keys: string) => void
   disabled?: boolean
   requestDataDisplayMode: 'json' | 'textFields';
@@ -41,7 +56,8 @@ export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onCha
 
   const handleChange = (key: string, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (onChange) {
-      onChange(key, event.target.value);
+      console.log(data)
+      onChange(_set(data, key, event.target.value))
     }
   };
 
@@ -63,13 +79,17 @@ export const FlowDataInput: React.FC<FlowDataInputParams> = ({ data, type, onCha
 
     edit.onDidBlurEditorWidget((e) => {
       try {
-        const oldVal = flatten(data) as Record<string, unknown>;
-        const newVal = flatten(JSON.parse(edit.getValue())) as Record<string, unknown>;
-  
-        for (let key in { ...newVal, ...oldVal }) {
-          if (newVal[key] !== oldVal[key] && onChange && oldVal[key]) {
-            onChange(key, newVal[key]);
+        let newData = _clone(data);
+        const editorData = flatten(JSON.parse(edit.getValue())) as Record<string, unknown>;
+
+        for (const key in editorData) {
+          if (isValidProperty(data, editorData, key)) {
+            newData = _set(newData, key, editorData[key])
           }
+        }
+
+        if (onChange) {
+          onChange(newData)
         }
       } catch (e) {
         edit.setValue(JSON.stringify(data, null, 2));
